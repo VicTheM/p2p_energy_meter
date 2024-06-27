@@ -1,9 +1,9 @@
-### Story For The Da
+### Story For The Day
 I am quite hasty now and not peaceful enough, nontherless I would still leave a story behind😉<br>
 this is a story about you, want to hear it?
 
 
-[IMPORTANT]
+[Important]
 Drive Link: https://drive.google.com/drive/folders/1DKCCjiS-8wvC10rtB_X9EqegU-NfnM7k
 Images, resourses and other word documents will be uploaded to the drive instead of this repo<br>
 
