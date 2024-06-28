@@ -1,6 +1,6 @@
 ### Story For The Day
 I am quite hasty now and not peaceful enough, nontherless I would still leave a story behind😉<br>
-this is a story about you, want to hear it?
+this is a story about you, want to hear it?  Yes
 
 
 [Important]
