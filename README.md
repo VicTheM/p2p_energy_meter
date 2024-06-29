@@ -1,8 +1,9 @@
-<div style="background-color: #f4f4f4; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
-  <p><strong>Story for the day</strong></p>
-</div>
+> **Story For The Day**
+> 
 > Sharing stories leads to intimacy.
 
+<br>
+<br>
 
 > [!IMPORTANT]
 > Drive Link: [Click here](https://drive.google.com/drive/folders/1DKCCjiS-8wvC10rtB_X9EqegU-NfnM7k) <br>
