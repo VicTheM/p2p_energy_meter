@@ -1,6 +1,7 @@
 > **Story For The Day**
 > 
-> Sharing stories leads to intimacy.
+> <span style="color: #ff4500;">Sharing stories leads to intimacy.</span>
+
 
 <br>
 <br>
