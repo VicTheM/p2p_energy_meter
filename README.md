@@ -1,6 +1,5 @@
 ### Story For The Day
-I am quite hasty now and not peaceful enough, nontherless I would still leave a story behind😉<br>
-this is a story about you, want to hear it?  Yes
+Sharing stories leads to intimacy.
 
 
 [Important]
@@ -43,7 +42,7 @@ The smart metering system is designed to monitor and share domestically generate
 
 ### Prerequisites
 
-- C compiler (e.g., GCC)
+- Arduino IDE v2.x.x
 - Python 3.x
 - Git
 
@@ -55,39 +54,20 @@ The smart metering system is designed to monitor and share domestically generate
    cd smart-meter-p2p-server
    ```
 
-2. **Build the C components**
+2. **Compile and upload using the Arduino IDE**
    ```sh
-   cd smart_meter
-   make
-   cd ..
+   cd meter
    ```
 
-3. **Install Python dependencies**
+4. **Set up the web server**
    ```sh
+   cd ../web
    pip install -r requirements.txt
+   cd web_flask
+   python app.py
    ```
 
-## Usage
-
-### Running the Smart Meter
-
-To run the smart meter code, navigate to the `smart_meter` directory and execute the compiled binary:
-
-```sh
-cd smart_meter
-./smart_meter
-```
-
-### Running the P2P Server
-
-To start the P2P server, navigate to the `p2p_server` directory and run the server script:
-
-```sh
-cd p2p_server
-python server.py
-```
-
-### Data Analysis and Visualization
+### Data Analysis and Visualization (coming soon)
 
 Python scripts for data analysis and visualization can be found in the `analysis` directory. To generate a report, run:
 
@@ -100,15 +80,14 @@ python generate_report.py
 
 ```plaintext
 smart-meter-p2p-server/
-├── smart_meter/
-│   ├── main.c
-│   ├── meter.c
-│   ├── meter.h
-│   ├── Makefile
+├── meter/
+│   ├── meter.ino
+│   ├── header.h
+│   ├── connections.h
 │   └── README.md
-├── p2p_server/
-│   ├── server.py
-│   ├── client.py
+├── web/
+│   ├── web_flask
+│   ├── classes.py
 │   └── README.md
 ├── analysis/
 │   ├── generate_report.py
@@ -118,8 +97,8 @@ smart-meter-p2p-server/
 └── README.md
 ```
 
-- `smart_meter/`: Contains the C code for the smart meter.
-- `p2p_server/`: Contains the Python code for the P2P server.
+- `meter/`: Contains the C code for the smart meter.
+- `web/`: Contains the Python code for the P2P server.
 - `analysis/`: Contains Python scripts for data analysis and visualization.
 - `requirements.txt`: Lists Python dependencies.
 - `README.md`: This file.
@@ -150,5 +129,3 @@ We welcome contributions to improve this project! Please fork the repository and
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
 ---
-Chill, this is just a placeholder formulated by chatgpt. We can put stuff as we go.
-Feel free to adjust the content as needed for your specific project details.
