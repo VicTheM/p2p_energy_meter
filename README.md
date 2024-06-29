@@ -1,6 +1,6 @@
 > **Story For The Day**
 > 
-> Sharing stories leads to intimacy intimacy.
+> Sharing stories leads to intimacy.
 
 
 <br>
