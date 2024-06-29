@@ -1,15 +1,35 @@
+/*---------------------------------------------------------------------------------------------------------
+
+CONNECTION RELATED FUNCTIONS ARE DEFINED HERE. THIS FILE WORKS WITH SOME GLOBAL VARIABLES LIKE SSID AND
+PASSKEY. THE FOLLOWING FUNCTIONS ARE DEFINED HERE
+
+    * configWifiStation
+    * wifiIsConnected
+    * callback
+
+THE CALLBACK FUNCTION IS THE FUNCTION THAT GETS EXECUTED WHEN A MESSAGE ARRIVES AT THE TOPIC THIS MICRO
+CONTROLLER IS SUBSCRIBED TO
+
+------------------------------------------------------------------------------------------------------------*/
+
 #ifndef CONNECTIONS_H
 #define CONNECTIONS_H
 #include "header.h"
 
 
+
+
+/**
+ * Connects the microcontroller to a wifi network.
+ * In a failed attempt, it tries 20 times, each time
+ * using 0.65 seeconds
+ */
 bool configWiFiStation(const char * ssid, const char * passkey)
 {
     unsigned int WiFiConnectAttempt = 20;
-    ssid = String(ssid);
-    passkey = String(passkey);
     WiFi.mode(WIFI_STA);
-    Serial.print("\n\n\nConnecting WiFi to " + ssid);
+    Serial.print("\n\n\nConnecting WiFi to ");
+    Serial.println(ssid);
 
     WiFi.begin(ssid, passkey);
     while (((!wiFiIsConnected()) && (WiFiConnectAttempt != 0)))
@@ -22,7 +42,9 @@ bool configWiFiStation(const char * ssid, const char * passkey)
     }
 
     if (wiFiIsConnected()){
-        Serial.print("\nWiFi Connected to " + ssid + "\nIP Address: ");
+        Serial.print("\nWiFi Connected to ");
+        Serial.print(ssid);
+        Serial.print(" \nIP Address: ");
         Serial.println(WiFi.localIP());
         return (true);
     }
@@ -32,9 +54,13 @@ bool configWiFiStation(const char * ssid, const char * passkey)
 
 
 
+
+
 bool wiFiIsConnected(){
     return (WiFi.status() == WL_CONNECTED);
 }
+
+
 
 
 
@@ -54,7 +80,8 @@ bool wiFiIsConnected(){
  */
 void callback(char* topic, byte* payload, unsigned int length)
 {
-  bool ack;
+  bool ack = true;
+  u_int8_t state = 3;
 
   Serial.print("Message arrived [");
   Serial.print(topic);
@@ -65,7 +92,7 @@ void callback(char* topic, byte* payload, unsigned int length)
   message[length] = '\0';
   Serial.println(message);
 
-  StaticJsonDocument<200> jsonDoc;
+  JsonDocument jsonDoc;
   DeserializationError error = deserializeJson(jsonDoc, message);
   
   if (error)
@@ -76,35 +103,36 @@ void callback(char* topic, byte* payload, unsigned int length)
   }
 
   // Extract values. Provision will be made for updating other variables
-  if (jsonDoc.containsKey("state") && jsonDoc.containsKey("ack"))
+  if (jsonDoc.containsKey("state"))
   {
     state = jsonDoc["state"];
+  }
+
+  if (jsonDoc.containsKey("ack"))
+  {
     ack = jsonDoc["ack"];
+  }
 
-    // Print extracted values
-    Serial.print("State: ");
-    Serial.println(state);
-    Serial.print("Ack: ");
-    Serial.println(ack);
+  // Print extracted values
+  Serial.print("State: ");
+  Serial.println(state);
+  Serial.print("Ack: ");
+  Serial.println(ack);
 
-    // The Logic
-    if (state == 3)
-    {
-      acknowledge = true;
-    }
-    else if (state == 0 || state == 1 || state == 2)
-    {
-      currentState = state;
-      change = true;
-    }
-    else
-    {
-      ;
-    }
+  // The Logic
+  if (state == 3)
+  {
+    acknowledge = true;
+  }
+  else if (state == 0 || state == 1 || state == 2)
+  {
+    currentState = state;
+    change = true;
   }
   else
   {
-    Serial.println("Required keys not found in JSON");
+    ;
   }
+
 }
 #endif // CONNECTIONS_H

@@ -1,21 +1,12 @@
-#include "header.h"
-
 /*------------------------------------ Place holders ----------------------------------------*/
-string WIFI_SSID = "Electrify";
-string WIFI_PASSWORD = "Victory111";
+const char* WIFI_SSID = "Electrify";
+const char* WIFI_PASSWORD = "Victory111";
 
 /*------------------------------------ GPIO Pins ---------------------------------------------*/
 const int LOAD = 18;                                             // Pin to control load relay
 const int SUPPLY = 19;                                           // Pin to control supply relay
 const int VOLTAGE = 34;                                          // Pin to read voltage
 const int CURRENT = 35;                                          // Pin to read current
-
-/*----------------------------------- Test Variables ------------------------------------------*/
-const char * MQTT_BROKER = "test.mosquitto.org";
-const char * MQTT_PORT = "1883";
-const char * MQTT_SUB_TOPIC = "commands/1/2232332606"; // of the form "commands/<node>/<deviceID>"
-const char * MQTT_PUB_TOPIC = "data/1/2232332606";     // of the form "data/<node>/<deviceID>"
-const char * CLIENT_ID = "House A";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -24,7 +15,7 @@ PubSubClient client(espClient);
 
 void setup()
 {
-  Serial.begin(115200));
+  Serial.begin(115200);
 
   // Set Pin Modes
   pinMode(LOAD, OUTPUT);
@@ -38,7 +29,7 @@ void setup()
 
   // Connext to the provided wifi
   configWiFiStation(WIFI_SSID, WIFI_PASSWORD);
-  if wiFiIsConnected()
+  if (wiFiIsConnected())
   {
     client.setServer(MQTT_BROKER, MQTT_PORT);
     client.setCallback(callback);
@@ -96,7 +87,7 @@ void loop()
       change = false;
       while (!change)
       {
-        Serial.print(.);
+        Serial.print(".");
         delay(10000);
       }
     }

@@ -1,8 +1,8 @@
+/*--------------------------------------- Function Definitions ----------------------------------------------*/
 #ifndef OPERATIONS_H
 #define OPERATIONS_H
-
 #include "header.h"
-#include <ArduinoJson.h>
+
 /**
  * This function gets a unique ID for every esp32 hardware it is called on
  *
@@ -48,7 +48,7 @@ float readVoltageData()
  *
  * Return: Float, the power in Watts
  */
-computePower(float current, float voltage)
+float computePower(float current, float voltage)
 {
     return (current * voltage);
 }
@@ -75,6 +75,12 @@ float stopTimer(unsigned long startTime) {
   return elapsedTime / 1000.0; // Convert milliseconds to seconds
 }
 
+
+/**
+ * Send the MQTT data to the broker in the format as described in the documentation
+ *
+ * Return: 1 success, 0 failed
+ */
 bool sendData(PubSubClient messenger, uint8_t state, float voltage, float current, float time)
 {
   // Esthablish a connection with the broker
@@ -93,7 +99,6 @@ bool sendData(PubSubClient messenger, uint8_t state, float voltage, float curren
       }
     }
   }
-
 
   JsonDocument doc;
 
@@ -118,42 +123,6 @@ bool sendData(PubSubClient messenger, uint8_t state, float voltage, float curren
 
   return (false);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
