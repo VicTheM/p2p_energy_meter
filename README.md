@@ -2,8 +2,8 @@
 Sharing stories leads to intimacy.
 
 
-[Important]
-Drive Link: https://drive.google.com/drive/folders/1DKCCjiS-8wvC10rtB_X9EqegU-NfnM7k
+> [!IMPORTANT]
+> Drive Link: https://drive.google.com/drive/folders/1DKCCjiS-8wvC10rtB_X9EqegU-NfnM7k <br>
 Images, resourses and other word documents will be uploaded to the drive instead of this repo<br>
 
 
