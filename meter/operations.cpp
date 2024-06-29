@@ -2,7 +2,7 @@
 #define OPERATIONS_H
 
 #include "header.h"
-
+#include <ArduinoJson.h>
 /**
  * This function gets a unique ID for every esp32 hardware it is called on
  *
@@ -74,5 +74,87 @@ float stopTimer(unsigned long startTime) {
 
   return elapsedTime / 1000.0; // Convert milliseconds to seconds
 }
+
+bool sendData(PubSubClient messenger, uint8_t state, float voltage, float current, float time)
+{
+  // Esthablish a connection with the broker
+  if (!messenger.connected()) {
+    while (!messenger.connected()) {
+      Serial.print("Attempting MQTT connection...");
+      if (messenger.connect("House A"))
+      {
+        Serial.println("connected");
+        messenger.subscribe(MQTT_SUB_TOPIC);
+      } else {
+        Serial.print("failed, rc=");
+        Serial.print(messenger.state());
+        Serial.println(" try again in 5 seconds");
+        delay(5000);
+      }
+    }
+  }
+
+
+  JsonDocument doc;
+
+  doc["state"] = state;
+  doc["voltage"] = voltage;
+  doc["current"] = current;
+  doc["time"] = time;
+
+  char payload[1024];
+  serializeJson(doc, payload);
+
+  if (messenger.publish(MQTT_PUB_TOPIC, payload))
+  {
+    Serial.println("Message Pubilshed Successfully");
+    return (true);
+  }
+  else
+  {
+    Serial.println("Publish Unsuccessful");
+    return (false);
+  }
+
+  return (false);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #endif // OPERATIONS_H
