@@ -1,4 +1,6 @@
-> [!STORY FOR THE DAY]
+<div style="background-color: #f4f4f4; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
+  <p><strong>Story for the day</strong></p>
+</div>
 > Sharing stories leads to intimacy.
 
 
