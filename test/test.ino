@@ -1,11 +1,10 @@
-/* 
-    The root header file for the firmware code that will be uploaded
-    to the esp32
-    
-    This file contains structures, function prototypes and global'
-    Variables
-*/
+/*----------------------------------------------------------------------------------------------
 
+THE ROOT HEADER FILE. FOR COMPILIATION AND UPLOADEING OF CODE, RUNT THE setup.py SCRIPT
+THIS SCRIPT FIRST CREATES OR OVERWRITE THE FILE "MAIN.INO", THEN FROM TOP TO BOTTOM IT
+INSERTS THE HEADER.H FILE, METER.INO FILE AND OTHER .CPP FILE IN ANY ORDER
+
+------------------------------------------------------------------------------------------------*/
 #ifndef HEADER_H
 #define HEADER_H
 
@@ -18,19 +17,18 @@
 
 #define MQTT_PORT 1883
 
-/*----------------- Global Variables -----------------------*/
+/*---------------------------------- Global Variables -------------------------------------------*/
 u_int8_t currentState  = 0;
 bool change = false;
 bool acknowledge = false;
 
-/*----------------------------------- Test Variables ------------------------------------------*/
+/*-------------------------------------- Test Variables ------------------------------------------*/
 const char* MQTT_BROKER = "test.mosquitto.org";
 const char* MQTT_SUB_TOPIC = "commands/1/2232332606"; // of the form "commands/<node>/<deviceID>"
 const char* MQTT_PUB_TOPIC = "data/1/2232332606";     // of the form "data/<node>/<deviceID>"
 const char* CLIENT_ID = "House A";
 
-
-/*----------------- Function Prototypes --------------------*/
+/*---------------------------------- Function Prototypes ------------------------------------------*/
 float readCurrentData();
 float readVoltageData();
 float computePower(float current, float voltage);
@@ -41,9 +39,12 @@ float stopTimer(unsigned long startTime);
 void callback(char* topic, byte* payload, unsigned int length);
 bool sendData(PubSubClient messenger, uint8_t state, float voltage, float current, float time);
 
-
-
 #endif // HEADER_H
+
+
+
+
+
 
 /*------------------------------------ Place holders ----------------------------------------*/
 const char* WIFI_SSID = "Electrify";
@@ -135,7 +136,8 @@ void loop()
       while (!change)
       {
         Serial.print(".");
-        delay(10000);
+        client.loop();
+        delay(2000);
       }
     }
 
@@ -149,8 +151,10 @@ void loop()
       while (!change)
       {
         start = millis();
-        delay(10000);
+        delay(2000);
         sendData(client, currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+        Serial.println("calling loop");
+        client.loop();
       }
     }
 
@@ -164,8 +168,10 @@ void loop()
       while (!change)
       {
         start = millis();
-        delay(10000);
+        delay(2000);
         sendData(client, currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+        Serial.println("calling loop");
+        client.loop();
       }
 
       // No change
@@ -186,15 +192,10 @@ void loop()
 
 
 
-
-
-
-
-
-
-/*----------------------------------- Function Definitions --------------------------------------------*/
+/*--------------------------------------- Function Definitions ----------------------------------------------*/
 #ifndef OPERATIONS_H
 #define OPERATIONS_H
+
 /**
  * This function gets a unique ID for every esp32 hardware it is called on
  *
@@ -267,6 +268,12 @@ float stopTimer(unsigned long startTime) {
   return elapsedTime / 1000.0; // Convert milliseconds to seconds
 }
 
+
+/**
+ * Send the MQTT data to the broker in the format as described in the documentation
+ *
+ * Return: 1 success, 0 failed
+ */
 bool sendData(PubSubClient messenger, uint8_t state, float voltage, float current, float time)
 {
   // Esthablish a connection with the broker
@@ -286,16 +293,16 @@ bool sendData(PubSubClient messenger, uint8_t state, float voltage, float curren
     }
   }
 
-
   JsonDocument doc;
 
-  doc["state"] = state;
-  doc["voltage"] = voltage;
-  doc["current"] = current;
-  doc["time"] = time;
+  doc["s"] = state;
+  doc["v"] = voltage;
+  doc["c"] = current;
+  // doc["t"] = time;
 
   char payload[1024];
   serializeJson(doc, payload);
+  doc.clear();
 
   if (messenger.publish(MQTT_PUB_TOPIC, payload))
   {
@@ -315,43 +322,66 @@ bool sendData(PubSubClient messenger, uint8_t state, float voltage, float curren
 
 #endif // OPERATIONS_H
 
+
+
+
+
+
+
+/*---------------------------------------------------------------------------------------------------------
+
+CONNECTION RELATED FUNCTIONS ARE DEFINED HERE. THIS FILE WORKS WITH SOME GLOBAL VARIABLES LIKE SSID AND
+PASSKEY. THE FOLLOWING FUNCTIONS ARE DEFINED HERE
+
+    * configWifiStation
+    * wifiIsConnected
+    * callback
+
+THE CALLBACK FUNCTION IS THE FUNCTION THAT GETS EXECUTED WHEN A MESSAGE ARRIVES AT THE TOPIC THIS MICRO
+CONTROLLER IS SUBSCRIBED TO
+
+------------------------------------------------------------------------------------------------------------*/
+
 #ifndef CONNECTIONS_H
 #define CONNECTIONS_H
 
 
+
+
+/**
+ * Connects the microcontroller to a wifi network.
+ * In a failed attempt, it tries 20 times, each time
+ * using 0.65 seeconds
+ */
 bool configWiFiStation(const char * ssid, const char * passkey)
 {
-    unsigned int WiFiConnectAttempt = 20;
-    WiFi.mode(WIFI_STA);
-    Serial.print("\n\n\nConnecting WiFi to ");
-    Serial.println(ssid);
+  Serial.println("******************************************************");
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
 
-    WiFi.begin(ssid, passkey);
-    while (((!wiFiIsConnected()) && (WiFiConnectAttempt != 0)))
-    {
-      // Loop to reattempt wifi connection if not connected and connect Attempt not exceeded
-      WiFi.begin(ssid, passkey);
-      Serial.print(".");
-      WiFiConnectAttempt -= 1;
+  WiFi.begin(ssid, passkey);
+
+  while (WiFi.status() != WL_CONNECTED) {
       delay(500);
-    }
+      Serial.print(".");
+  }
 
-    if (wiFiIsConnected()){
-        Serial.print("\nWiFi Connected to ");
-        Serial.print(ssid);
-        Serial.print(" \nIP Address: ");
-        Serial.println(WiFi.localIP());
-        return (true);
-    }
-    Serial.println("Wifi Connection Failed");
-    return (false);
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+  return (true);
 }
+
+
 
 
 
 bool wiFiIsConnected(){
     return (WiFi.status() == WL_CONNECTED);
 }
+
+
 
 
 
@@ -371,8 +401,8 @@ bool wiFiIsConnected(){
  */
 void callback(char* topic, byte* payload, unsigned int length)
 {
-  bool ack;
-  u_int8_t state;
+  bool ack = true;
+  u_int8_t state = 3;
 
   Serial.print("Message arrived [");
   Serial.print(topic);
@@ -394,35 +424,36 @@ void callback(char* topic, byte* payload, unsigned int length)
   }
 
   // Extract values. Provision will be made for updating other variables
-  if (jsonDoc.containsKey("state") && jsonDoc.containsKey("ack"))
+  if (jsonDoc.containsKey("state"))
   {
     state = jsonDoc["state"];
+  }
+
+  if (jsonDoc.containsKey("ack"))
+  {
     ack = jsonDoc["ack"];
+  }
 
-    // Print extracted values
-    Serial.print("State: ");
-    Serial.println(state);
-    Serial.print("Ack: ");
-    Serial.println(ack);
+  // Print extracted values
+  Serial.print("State: ");
+  Serial.println(state);
+  Serial.print("Ack: ");
+  Serial.println(ack);
 
-    // The Logic
-    if (state == 3)
-    {
-      acknowledge = true;
-    }
-    else if (state == 0 || state == 1 || state == 2)
-    {
-      currentState = state;
-      change = true;
-    }
-    else
-    {
-      ;
-    }
+  // The Logic
+  if (state == 3)
+  {
+    acknowledge = true;
+  }
+  else if (state == 0 || state == 1 || state == 2)
+  {
+    currentState = state;
+    change = true;
   }
   else
   {
-    Serial.println("Required keys not found in JSON");
+    ;
   }
+
 }
 #endif // CONNECTIONS_H
