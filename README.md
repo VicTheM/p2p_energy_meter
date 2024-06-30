@@ -1,6 +1,7 @@
 > **Story For The Day**
 > 
 > Sharing stories leads to intimacy.
+> No it doesn't. Whatever sha. Are you still testing the firmware?
 
 
 <br>
