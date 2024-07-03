@@ -2,7 +2,7 @@
 #define OPERATIONS_H
 #include "header.h"
 
-/*------------------------------------ Global Variables ----------------------------------------*/
+/*------------------------------------ Global Definitions ----------------------------------------*/
 const char* WIFI_SSID = "Electrify"; // "unilag.wifi.int23"
 const char* WIFI_PASSWORD = "Victory111"; //"2524767676"
 const char* MQTT_BROKER = "test.mosquitto.org";
@@ -14,7 +14,7 @@ u_int8_t currentState  = 0;
 bool change = false;
 bool acknowledge = false;
 
-/*------------------------------------ GPIO Pins ---------------------------------------------*/
+/*-------------------------------------- GPIO Pins ------------------------------------------------*/
 const int LOAD = 18;                                             // Pin to control load relay
 const int SUPPLY = 19;                                           // Pin to control supply relay
 const int VOLTAGE = 34;                                          // Pin to read voltage
@@ -22,6 +22,8 @@ const int CURRENT = 35;                                          // Pin to read 
 
 
 
+
+/*------------------------------------ Function Definiions ----------------------------------------*/
 /**
  * This function gets a unique ID for every esp32 hardware it is called on
  *

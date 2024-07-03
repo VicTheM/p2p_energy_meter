@@ -134,4 +134,17 @@ void callback(char* topic, byte* payload, unsigned int length)
   }
 
 }
+
+
+/**
+ * This functions calls the send data function if the last time data was sent
+ * is up to SEND_FREQ minutes ago
+ */
+bool readyToSend(unsigned long prev)
+{
+  if (millis() - prev >= SEND_FREQ)
+    return (true);
+
+  return (false);
+}
 #endif // CONNECTIONS_H

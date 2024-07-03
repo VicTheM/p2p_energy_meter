@@ -1,3 +1,14 @@
+/*--------------------------------------------------------------------------------------------
+    Entry Point
+
+    This is the main entrance to the program, if you want to debug, start from this file
+    The algorithm will be defined soon
+    Please note that this file uses some global variables which are decleared in the
+    header.h file and defined in the operations.cpp file
+
+----------------------------------------------------------------------------------------------*/
+
+
 #include "header.h"
 
 WiFiClient espClient;
@@ -56,8 +67,10 @@ void setup()
 }
 
 
+// The Main Loop
 unsigned long start;
-void loop()
+unsigned long prev = 0
+;void loop()
 {
   if (wiFiIsConnected())
   {
@@ -74,11 +87,16 @@ void loop()
       digitalWrite(LOAD, LOW);
       digitalWrite(SUPPLY, LOW);
       Serial.print("Disconnected ");
+
+      prev = millis();
       change = false;
       while (!change)
       {
-        Serial.print(".");
-        delay(2000);
+        if (readyToSend(prev));
+        {
+          Serial.print(".");
+        }
+        delay(500);
         client.loop();
       }
     }
@@ -89,12 +107,18 @@ void loop()
       digitalWrite(LOAD, LOW);
       digitalWrite(SUPPLY, HIGH);
       Serial.println("Sending");
+
       change = false;
+      sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+      prev = millis();
       while (!change)
       {
         start = millis();
-        delay(2000);
-        sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+        if (readyToSend(prev))
+        {
+          sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+        }
+        delay(500);
         client.loop();
       }
     }
@@ -104,13 +128,19 @@ void loop()
       // Receive
       digitalWrite(SUPPLY, LOW);
       digitalWrite(LOAD, HIGH);
-      Serial.print("Receiving");
+      Serial.println("Receiving");
+
       change = false;
+      sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+      prev = millis();
       while (!change)
       {
         start = millis();
-        delay(10000);
-        sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+        if (readyToSend(prev))
+        {
+          sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+        }
+        delay(500);
         client.loop();
       }
 
