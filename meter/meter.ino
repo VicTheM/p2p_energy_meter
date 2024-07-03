@@ -1,12 +1,4 @@
-/*------------------------------------ Place holders ----------------------------------------*/
-const char* WIFI_SSID = "Electrify";
-const char* WIFI_PASSWORD = "Victory111";
-
-/*------------------------------------ GPIO Pins ---------------------------------------------*/
-const int LOAD = 18;                                             // Pin to control load relay
-const int SUPPLY = 19;                                           // Pin to control supply relay
-const int VOLTAGE = 34;                                          // Pin to read voltage
-const int CURRENT = 35;                                          // Pin to read current
+#include "header.h"
 
 WiFiClient espClient;
 PubSubClient client(espClient);

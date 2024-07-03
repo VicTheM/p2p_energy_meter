@@ -17,16 +17,20 @@ INSERTS THE HEADER.H FILE, METER.INO FILE AND OTHER .CPP FILE IN ANY ORDER
 
 #define MQTT_PORT 1883
 
-/*---------------------------------- Global Variables -------------------------------------------*/
-u_int8_t currentState  = 0;
-bool change = false;
-bool acknowledge = false;
-
-/*-------------------------------------- Test Variables ------------------------------------------*/
-const char* MQTT_BROKER = "test.mosquitto.org";
-const char* MQTT_SUB_TOPIC = "commands/1/2232332606"; // of the form "commands/<node>/<deviceID>"
-const char* MQTT_PUB_TOPIC = "data/1/2232332606";     // of the form "data/<node>/<deviceID>"
-const char* CLIENT_ID = "House A";
+/*------------------------------------ Place holders ----------------------------------------*/
+extern const char* WIFI_SSID;
+extern const char* WIFI_PASSWORD;
+extern const int LOAD;
+extern const int SUPPLY;
+extern const int VOLTAGE;
+extern const int CURRENT;
+extern u_int8_t currentState;
+extern bool change;
+extern bool acknowledge;
+extern const char* MQTT_BROKER;
+extern const char* MQTT_SUB_TOPIC;
+extern const char* MQTT_PUB_TOPIC;
+extern const char* CLIENT_ID;
 
 /*---------------------------------- Function Prototypes ------------------------------------------*/
 float readCurrentData();
