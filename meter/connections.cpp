@@ -27,7 +27,6 @@ CONTROLLER IS SUBSCRIBED TO
 bool configWiFiStation(const char * ssid, const char * passkey)
 {
     unsigned int WiFiConnectAttempt = 20;
-    WiFi.mode(WIFI_STA);
     Serial.print("\n\n\nConnecting WiFi to ");
     Serial.println(ssid);
 

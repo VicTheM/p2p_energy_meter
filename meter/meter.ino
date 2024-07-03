@@ -3,8 +3,6 @@
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-
-
 void setup()
 {
   Serial.begin(115200);
@@ -67,7 +65,7 @@ void loop()
     if (acknowledge)
     {
       acknowledge = false;
-      sendData(client, currentState, readVoltageData(), readCurrentData(), stopTimer(millis()));
+      sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(millis()));
     }
 
     if (currentState == 0)
@@ -80,7 +78,8 @@ void loop()
       while (!change)
       {
         Serial.print(".");
-        delay(10000);
+        delay(2000);
+        client.loop();
       }
     }
 
@@ -94,8 +93,9 @@ void loop()
       while (!change)
       {
         start = millis();
-        delay(10000);
-        sendData(client, currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+        delay(2000);
+        sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+        client.loop();
       }
     }
 
@@ -110,7 +110,8 @@ void loop()
       {
         start = millis();
         delay(10000);
-        sendData(client, currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+        sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+        client.loop();
       }
 
       // No change

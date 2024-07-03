@@ -31,6 +31,7 @@ extern const char* MQTT_BROKER;
 extern const char* MQTT_SUB_TOPIC;
 extern const char* MQTT_PUB_TOPIC;
 extern const char* CLIENT_ID;
+extern PubSubClient client;
 
 /*---------------------------------- Function Prototypes ------------------------------------------*/
 float readCurrentData();
@@ -41,6 +42,6 @@ bool wiFiIsConnected();
 uint32_t getUniqueID();
 float stopTimer(unsigned long startTime);
 void callback(char* topic, byte* payload, unsigned int length);
-bool sendData(PubSubClient messenger, uint8_t state, float voltage, float current, float time);
+bool sendData(uint8_t state, float voltage, float current, float time);
 
 #endif // HEADER_H

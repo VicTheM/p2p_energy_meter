@@ -3,8 +3,8 @@
 #include "header.h"
 
 /*------------------------------------ Global Variables ----------------------------------------*/
-const char* WIFI_SSID = "unilag.wifi.int23";
-const char* WIFI_PASSWORD = "2524767676";
+const char* WIFI_SSID = "Electrify"; // "unilag.wifi.int23"
+const char* WIFI_PASSWORD = "Victory111"; //"2524767676"
 const char* MQTT_BROKER = "test.mosquitto.org";
 const char* MQTT_SUB_TOPIC = "commands/1/2232332606"; // of the form "commands/<node>/<deviceID>"
 const char* MQTT_PUB_TOPIC = "data/1/2232332606";
@@ -100,19 +100,19 @@ float stopTimer(unsigned long startTime) {
  *
  * Return: 1 success, 0 failed
  */
-bool sendData(PubSubClient messenger, uint8_t state, float voltage, float current, float time)
+bool sendData(uint8_t state, float voltage, float current, float time)
 {
   // Esthablish a connection with the broker
-  if (!messenger.connected()) {
-    while (!messenger.connected()) {
+  if (!client.connected()) {
+    while (!client.connected()) {
       Serial.print("Attempting MQTT connection...");
-      if (messenger.connect("House A"))
+      if (client.connect("House A"))
       {
         Serial.println("connected");
-        messenger.subscribe(MQTT_SUB_TOPIC);
+        client.subscribe(MQTT_SUB_TOPIC);
       } else {
         Serial.print("failed, rc=");
-        Serial.print(messenger.state());
+        Serial.print(client.state());
         Serial.println(" try again in 5 seconds");
         delay(5000);
       }
@@ -129,7 +129,7 @@ bool sendData(PubSubClient messenger, uint8_t state, float voltage, float curren
   char payload[1024];
   serializeJson(doc, payload);
 
-  if (messenger.publish(MQTT_PUB_TOPIC, payload))
+  if (client.publish(MQTT_PUB_TOPIC, payload))
   {
     Serial.println("Message Pubilshed Successfully");
     return (true);
