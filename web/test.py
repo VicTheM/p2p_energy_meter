@@ -1,29 +1,29 @@
-from classes import MQTTClient, DBClient, UserManager, IoTManager
-import json
+"""
+This file takes us through a tutorial of using the Python in-built db
+"""
+import sqlite3
+from dbClass import DBClient
+
+client = DBClient()
+client.create_tables()
+
+# Test inserting same user multiple times
+client.add_user("a", 7, 0, 7)
+client.add_user("a", 4, 0, 4)
+client.add_user("b", 5, 0, 5)
+client.add_user("a", 6, 0, 6)
 
 
-if __name__ == "__main__":
-    broker = "test.mosquitto.org"
-    port = 1883
-    topic_sub = "VictoryIsNotangry"
-    topic_pub = "HeJustChanged...Again"
-    db_url = ""  # Yet to get one
+users = client.get_user()
+for user in users:
+    print(user)
 
-    mqtt_client = MQTTClient(broker, port, topic_sub, topic_pub)
-    db_client = DBClient(db_url)
-    user_manager = UserManager()
-    iot_manager = IoTManager(mqtt_client, db_client, user_manager)
+# con = sqlite3.connect("test_solarlink.db")
+# cur = con.cursor()
 
-    iot_manager.start()
+# with con:
+#     all = con.execute("SELECT * FROM users WHERE  deviceID = 5 OR UserID = 5")
+#     duplicate = all.fetchone()
 
-    # Example of user operations
-    device_id = "user_device_id"
-    if user_manager.login(device_id):
-        user_manager.create_record(device_id, "topic", "payload")
-        records = user_manager.read_records(device_id)
-        print(records)
-        user_manager.update_record(records[0].id, "new_payload")
-        user_manager.delete_record(records[0].id)
-
-    # Example of sending a command
-    iot_manager.send_command(json.dumps({"command": "turn_on_led"}))
+#     if duplicate[1] == '5':
+#         print(f"deviceid: {duplicate[1]}")
