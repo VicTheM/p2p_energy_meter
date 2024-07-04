@@ -1,39 +1,38 @@
-from flask import Flask, render_template, request, jsonify
-import threading
-from mqttClass import MQTTClient
-from dbClass import DBClient
+# app.py
+from flask import Flask, render_template, request, jsonify, session
+# import threading
+# from mqttClass import MQTTClient
+from ..dbClass import DBClient
+import os
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
 
-# Initialize the database client
 db_client = DBClient()
 
 # MQTT broker details
-broker = "test.mosquitto.org"
-port = 1883
+# broker = "test.mosquitto.org"
+# port = 1883
 
-# Initialize the MQTT client
-mqtt_client = MQTTClient(broker, port)
-topic = "state/1/+"
+# mqtt_client = MQTTClient(broker, port)
 
-# Background thread to listen for MQTT messages and store them in the database
-def listen_to_mqtt():
-    mqtt_client.subscribe(topic)
-    while True:
-        message = mqtt_client.get_message()
-        if message:
-            db_client.add_message(
-                message.deviceID,
-                message.state,
-                message.voltage,
-                message.current,
-                message.duration
-            )
+# def listen_to_mqtt():
+#     mqtt_client.subscribe("state/1/+")
+#     while True:
+#         message = mqtt_client.get_message()
+#         if message:
+#             db_client.add_message(
+#                 message.deviceID,
+#                 message.state,
+#                 message.voltage,
+#                 message.current,
+#                 message.duration
+#             )
 
-# Start the MQTT listener thread
-mqtt_thread = threading.Thread(target=listen_to_mqtt)
-mqtt_thread.daemon = True
-mqtt_thread.start()
+# # Start the MQTT listener thread
+# mqtt_thread = threading.Thread(target=listen_to_mqtt)
+# mqtt_thread.daemon = True
+# mqtt_thread.start()
 
 @app.route('/')
 def index():
@@ -41,7 +40,16 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
-    device_id = request.form.get('deviceID')
+    device_id = request.json.get('deviceID')
+    session['device_id'] = device_id
+    return jsonify({"message": "Login successful", "deviceID": device_id})
+
+@app.route('/messages')
+def get_messages():
+    device_id = session.get('device_id')
+    if not device_id:
+        return jsonify({"error": "Not logged in"}), 403
+
     messages = db_client.get_messages(device_id)
     return jsonify(messages)
 
