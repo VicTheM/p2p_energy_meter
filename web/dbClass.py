@@ -135,11 +135,42 @@ class DBClient:
             WHERE DeviceID = ?
             """, (state, voltage, current, device_id, duration))
 
-    def delete_message(self, device_id):
+    def delete_message(self, device_id, num_messages=None):
         with self.conn:
-            self.conn.execute(f"""
-            DELETE FROM {self.__messagetable__} WHERE DeviceID = ?
-            """, (device_id,))
+            cursor = self.conn.cursor()
+            
+            if num_messages is None:
+                # Delete all messages with the specified device_id
+                cursor.execute(f"""
+                DELETE FROM {self.__messagetable__} WHERE DeviceID = ?
+                """, (device_id,))
+            
+            elif num_messages == 0:
+                # Delete the most recent message with the specified device_id
+                cursor.execute(f"""
+                DELETE FROM {self.__messagetable__} WHERE rowid = (
+                    SELECT rowid FROM {self.__messagetable__} 
+                    WHERE DeviceID = ? 
+                    ORDER BY time DESC 
+                    LIMIT 1
+                )
+                """, (device_id,))
+            
+            else:
+                # Delete the oldest N messages with the specified device_id
+                cursor.execute(f"""
+                SELECT rowid FROM {self.__messagetable__} 
+                WHERE DeviceID = ? 
+                ORDER BY time ASC
+                """, (device_id,))
+                
+                rows = cursor.fetchall()
+                if len(rows) >= num_messages:
+                    row_ids_to_delete = tuple(row[0] for row in rows[:num_messages])
+                    cursor.execute(f"""
+                    DELETE FROM {self.__messagetable__} 
+                    WHERE rowid IN ({','.join('?' for _ in row_ids_to_delete)})
+                    """, row_ids_to_delete)
 
     def add_account(self, device_id, balance):
         with self.conn:

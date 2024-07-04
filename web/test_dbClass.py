@@ -13,9 +13,7 @@ class TestDBClient(unittest.TestCase):
     def setUp(self):
         # Setup a test database file
         self.test_db = 'test2_solarlink.db'
-        self.client = DBClient()
-        self.client.__dbname__ = self.test_db
-        self.client.conn = sqlite3.connect(self.test_db)
+        self.client = DBClient(self.test_db)
         self.client.create_tables()
 
     def tearDown(self):
@@ -58,13 +56,48 @@ class TestDBClient(unittest.TestCase):
         self.assertEqual(messages[0][3], 1.2)
         self.assertEqual(messages[0][4], 5)
 
-    def test_delete_message(self):
-        self.client.add_user('John', 'device130', 8, 'user008')
-        self.client.add_message('device130', True, 4.5, 2.3, 6)
-        self.client.add_message('device130', False, 4, 2, 6)
-        self.client.delete_message('device130')
-        messages = self.client.get_messages('device130')
-        self.assertEqual(len(messages), 0)
+    def insert_message_data(self):
+        sample_data = [
+            ('device123', True, 2.3, 1.2, 60.0),
+            ('device123', False, 3.3, 1.2, 40.0),
+            ('device123', True, 4.3, 1.2, 30.0),
+            ('device123', True, 5.3, 1.5, 3.0),
+            ('device123', True, 6.3, 1.2, 0.1),
+        ]
+        for data in sample_data:
+            self.client.add_message(*data)
+
+    def test_delete_all_messages(self):
+        self.insert_message_data()
+        self.client.delete_message('device123')
+        cursor = self.client.conn.cursor()
+        cursor.execute(f"SELECT COUNT(*) FROM {self.client.__messagetable__} WHERE DeviceID = 'device123'")
+        count = cursor.fetchone()[0]
+        self.assertEqual(count, 0)
+
+    def test_delete_most_recent_message(self):
+        self.insert_message_data()
+        self.client.delete_message('device123', 0)
+        cursor = self.client.conn.cursor()
+        cursor.execute(f"SELECT COUNT(*) FROM {self.client.__messagetable__} WHERE DeviceID = 'device123'")
+        count = cursor.fetchone()[0]
+        self.assertEqual(count, 4)
+
+    def test_delete_oldest_n_messages(self):
+        self.insert_message_data()
+        self.client.delete_message('device123', 2)
+        cursor = self.client.conn.cursor()
+        cursor.execute(f"SELECT COUNT(*) FROM {self.client.__messagetable__} WHERE DeviceID = 'device123'")
+        count = cursor.fetchone()[0]
+        self.assertEqual(count, 3)
+
+    def test_delete_oldest_n_messages_not_enough(self):
+        self.insert_message_data()
+        self.client.delete_message('device123', 6)
+        cursor = self.client.conn.cursor()
+        cursor.execute(f"SELECT COUNT(*) FROM {self.client.__messagetable__} WHERE DeviceID = 'device123'")
+        count = cursor.fetchone()[0]
+        self.assertEqual(count, 5)
 
     def test_add_and_get_account_balance(self):
         self.client.add_user('Eve', 'device127', 5, 'user005')
@@ -81,15 +114,5 @@ class TestDBClient(unittest.TestCase):
         self.assertIsNotNone(balance)
         self.assertEqual(balance[0], 250.0)
 
-    # # test for sql joins, retrieveing user and account balance at once
-    # def test_get_user_and_account_balance(self):
-    #     self.client.add_user('Grace', 'device129', 7, 'user007')
-    #     self.client.add_account('device129', 300.0)
-    #     user = self.client.get_user_and_account_balance('device129')
-    #     self.assertIsNotNone(user)
-    #     self.assertEqual(user[0], 'Grace')
-    #     self.assertEqual(user[1], 7)
-    #     self.assertEqual(user[2], 'user007')
-    #     self.assertEqual(user[3], 300.0)
 if __name__ == '__main__':
     unittest.main()
