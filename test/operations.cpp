@@ -127,7 +127,7 @@ bool sendData(uint8_t state, float voltage, float current, float time)
   doc["state"] = state;
   doc["voltage"] = voltage;
   doc["current"] = current;
-  doc["time"] = time;
+  doc["duration"] = time;
 
   char payload[1024];
   serializeJson(doc, payload);
