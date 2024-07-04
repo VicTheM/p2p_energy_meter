@@ -13,13 +13,14 @@ class DBClient:
             * Username
             * deviceID (primary key)
             * Node (an integer)
-            * UserID (unique)
+            * UserID
 
     - messages: Has the following fields
             * DeviceID (foreign key)
             * state (boolean)
             * voltage (float)
             * current (float)
+            * duration (float)
             * time (now)
 
     - Accounts: table to hold users account balance
@@ -32,7 +33,9 @@ class DBClient:
     __accounttable__ = "accounts"
     __messagetable__ = "messages"
 
-    def __init__(self):
+    def __init__(self, dbname=None):
+        if dbname:
+            self.__dbname__ = dbname
         self.conn = sqlite3.connect(self.__dbname__)
         self.create_tables()
 
@@ -43,7 +46,7 @@ class DBClient:
                 Username TEXT,
                 deviceID TEXT PRIMARY KEY,
                 Node INTEGER,
-                UserID TEXT UNIQUE
+                UserID TEXT
             );
             """)
             self.conn.execute(f"""
@@ -52,6 +55,7 @@ class DBClient:
                 state BOOLEAN,
                 voltage FLOAT,
                 current FLOAT,
+                duration FLOAT,
                 time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(DeviceID) REFERENCES {self.__usertable__}(deviceID)
             );
@@ -65,14 +69,25 @@ class DBClient:
             """)
 
     def add_user(self, username, device_id, node, user_id):
+        """ Add a new user to the database. If the user already exists, update the user"""
         with self.conn:
+            duplicate = self.get_user(device_id)
+            if duplicate:
+                self.update_user(device_id, Username=username, Node=node, UserID=user_id)
+                return
             self.conn.execute(f"""
             INSERT INTO {self.__usertable__} (Username, deviceID, Node, UserID)
             VALUES (?, ?, ?, ?)
             """, (username, device_id, node, user_id))
 
-    def get_user(self, device_id):
+    def get_user(self, device_id=None):
         cursor = self.conn.cursor()
+
+        if device_id is None:
+            cursor.execute(f"""
+            SELECT * FROM {self.__usertable__}
+            """)
+            return cursor.fetchall()
         cursor.execute(f"""
         SELECT * FROM {self.__usertable__} WHERE deviceID = ?
         """, (device_id,))
@@ -98,12 +113,12 @@ class DBClient:
             DELETE FROM {self.__accounttable__} WHERE deviceID = ?
             """, (device_id,))
 
-    def add_message(self, device_id, state, voltage, current):
+    def add_message(self, device_id, state, voltage, current, duration=0.0):
         with self.conn:
             self.conn.execute(f"""
-            INSERT INTO {self.__messagetable__} (DeviceID, state, voltage, current)
-            VALUES (?, ?, ?, ?)
-            """, (device_id, state, voltage, current))
+            INSERT INTO {self.__messagetable__} (DeviceID, state, voltage, current, duration)
+            VALUES (?, ?, ?, ?, ?)
+            """, (device_id, state, voltage, current, duration))
 
     def get_messages(self, device_id):
         cursor = self.conn.cursor()
@@ -112,6 +127,13 @@ class DBClient:
         ORDER BY time DESC
         """, (device_id,))
         return cursor.fetchall()
+    
+    def update_message(self, device_id, state, voltage, current, duration=0.0):
+        with self.conn:
+            self.conn.execute(f"""
+            UPDATE {self.__messagetable__} SET state = ?, voltage = ?, current = ?, duration = ?
+            WHERE DeviceID = ?
+            """, (state, voltage, current, device_id, duration))
 
     def add_account(self, device_id, balance):
         with self.conn:

@@ -1,3 +1,9 @@
+"""
+This module contains unit tests for the dbClass module.
+
+All test must pass everytime a chnage is made to the dbClass module.
+"""
+
 import unittest
 import os
 import sqlite3
@@ -18,6 +24,8 @@ class TestDBClient(unittest.TestCase):
         os.remove(self.test_db)
 
     def test_add_and_get_user(self):
+        self.client.add_user('Victory', 'device143', 1, 'user001')
+        self.client.add_user('Victory', 'device143', 1, 'user001')
         self.client.add_user('Victory', 'device123', 1, 'user001')
         user = self.client.get_user('device123')
         self.assertIsNotNone(user)
@@ -42,12 +50,13 @@ class TestDBClient(unittest.TestCase):
 
     def test_add_and_get_message(self):
         self.client.add_user('David', 'device126', 4, 'user004')
-        self.client.add_message('device126', True, 3.7, 1.2)
+        self.client.add_message('device126', True, 3.7, 1.2, 5)
         messages = self.client.get_messages('device126')
         self.assertEqual(len(messages), 1)
         self.assertEqual(messages[0][1], True)
         self.assertEqual(messages[0][2], 3.7)
         self.assertEqual(messages[0][3], 1.2)
+        self.assertEqual(messages[0][4], 5)
 
     def test_add_and_get_account_balance(self):
         self.client.add_user('Eve', 'device127', 5, 'user005')
@@ -64,5 +73,15 @@ class TestDBClient(unittest.TestCase):
         self.assertIsNotNone(balance)
         self.assertEqual(balance[0], 250.0)
 
+    # # test for sql joins, retrieveing user and account balance at once
+    # def test_get_user_and_account_balance(self):
+    #     self.client.add_user('Grace', 'device129', 7, 'user007')
+    #     self.client.add_account('device129', 300.0)
+    #     user = self.client.get_user_and_account_balance('device129')
+    #     self.assertIsNotNone(user)
+    #     self.assertEqual(user[0], 'Grace')
+    #     self.assertEqual(user[1], 7)
+    #     self.assertEqual(user[2], 'user007')
+    #     self.assertEqual(user[3], 300.0)
 if __name__ == '__main__':
     unittest.main()
