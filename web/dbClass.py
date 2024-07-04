@@ -1,8 +1,8 @@
+
 """ 
 THIS FILE DEFINES THE DATABASE CLIENT CLASS
 """
 import sqlite3
-from datetime import datetime
 
 class DBClient:
     """
@@ -26,19 +26,17 @@ class DBClient:
             * deviceID (foreign key)
             * currentBalance
     """
-
-    __dbname__ = "test_solarlink.db"
+        
+    __dbname__ = "solarlink.db"
     __usertable__ = "users"
     __accounttable__ = "accounts"
     __messagetable__ = "messages"
 
     def __init__(self):
-        """Connects or creates the database"""
         self.conn = sqlite3.connect(self.__dbname__)
         self.create_tables()
 
     def create_tables(self):
-        """Creates all the required table for the db if they don't exist"""
         with self.conn:
             self.conn.execute(f"""
             CREATE TABLE IF NOT EXISTS {self.__usertable__} (
@@ -67,30 +65,18 @@ class DBClient:
             """)
 
     def add_user(self, username, device_id, node, user_id):
-        """Adds a new user to the user table if user does not already exist"""
         with self.conn:
-            duplicate = self.conn.execute(f"""
-            SELECT * FROM {self.__usertable__} WHERE deviceID = {device_id}
-            OR UserID = {user_id}
-            """)
+            self.conn.execute(f"""
+            INSERT INTO {self.__usertable__} (Username, deviceID, Node, UserID)
+            VALUES (?, ?, ?, ?)
+            """, (username, device_id, node, user_id))
 
-            if not duplicate.fetchone():
-                self.conn.execute(f"""
-                INSERT INTO {self.__usertable__} (Username, deviceID, Node, UserID)
-                VALUES (?, ?, ?, ?)
-                """, (username, device_id, node, user_id))
-
-    def get_user(self, device_id=None):
+    def get_user(self, device_id):
         cursor = self.conn.cursor()
-        if device_id is None:
-            cursor.execute(f"""
-            SELECT * FROM {self.__usertable__}""")
-            return cursor.fetchall()
-        else:
-            cursor.execute(f"""
-            SELECT * FROM {self.__usertable__} WHERE deviceID = ?
-            """, (device_id,))
-            return cursor.fetchone()
+        cursor.execute(f"""
+        SELECT * FROM {self.__usertable__} WHERE deviceID = ?
+        """, (device_id,))
+        return cursor.fetchone()
 
     def update_user(self, device_id, **kwargs):
         columns = ", ".join(f"{key} = ?" for key in kwargs.keys())

@@ -70,8 +70,8 @@ void setup()
 
 // The Main Loop
 unsigned long start;
-unsigned long prev = 0
-;void loop()
+unsigned long prev = 0;
+void loop()
 {
   if (wiFiIsConnected())
   {

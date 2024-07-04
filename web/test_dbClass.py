@@ -6,7 +6,7 @@ from dbClass import DBClient
 class TestDBClient(unittest.TestCase):
     def setUp(self):
         # Setup a test database file
-        self.test_db = 'test_solarlink.db'
+        self.test_db = 'test2_solarlink.db'
         self.client = DBClient()
         self.client.__dbname__ = self.test_db
         self.client.conn = sqlite3.connect(self.test_db)
