@@ -58,6 +58,14 @@ class TestDBClient(unittest.TestCase):
         self.assertEqual(messages[0][3], 1.2)
         self.assertEqual(messages[0][4], 5)
 
+    def test_delete_message(self):
+        self.client.add_user('John', 'device130', 8, 'user008')
+        self.client.add_message('device130', True, 4.5, 2.3, 6)
+        self.client.add_message('device130', False, 4, 2, 6)
+        self.client.delete_message('device130')
+        messages = self.client.get_messages('device130')
+        self.assertEqual(len(messages), 0)
+
     def test_add_and_get_account_balance(self):
         self.client.add_user('Eve', 'device127', 5, 'user005')
         self.client.add_account('device127', 100.0)

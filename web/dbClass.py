@@ -135,6 +135,12 @@ class DBClient:
             WHERE DeviceID = ?
             """, (state, voltage, current, device_id, duration))
 
+    def delete_message(self, device_id):
+        with self.conn:
+            self.conn.execute(f"""
+            DELETE FROM {self.__messagetable__} WHERE DeviceID = ?
+            """, (device_id,))
+
     def add_account(self, device_id, balance):
         with self.conn:
             self.conn.execute(f"""
