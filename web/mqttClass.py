@@ -12,6 +12,7 @@ class Message:
         self.duration = duration
 
     def to_dict(self):
+        """Serialize the message to a dictionary"""
         return {
             "deviceID": self.deviceID,
             "state": self.state,
@@ -21,6 +22,7 @@ class Message:
         }
     
     def from_dict(self, info):
+        """Deserialize the message from a dictionary"""
         self.deviceID = info["deviceID"]
         self.state = info["state"]
         self.voltage = info["voltage"]
@@ -53,7 +55,7 @@ class MQTTClient:
 
     def on_message(self, client, userdata, message):
         """Receives the message in json form and deserialize it"""
-        print(f"Received message '{message.payload.decode()}' on topic '{message.topic}'")
+        print(f"Received message '{message.payload.decode('utf-8')}' on topic '{message.topic}'")
         self.message.from_dict(self.extract(message))
         self.update = True
 
@@ -92,10 +94,7 @@ class MQTTClient:
         }
     
     def get_message(self):
-        return self.message
-    
-    def get_update(self):
-        if (self.update):
+        if self.update:
             self.update = False
-            return True
-        return self.update
+            return self.message
+        return None

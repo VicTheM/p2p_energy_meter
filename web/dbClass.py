@@ -28,7 +28,7 @@ class DBClient:
             * currentBalance
     """
         
-    __dbname__ = "solarlink.db"
+    __dbname__ = "test_solarlink.db"
     __usertable__ = "users"
     __accounttable__ = "accounts"
     __messagetable__ = "messages"
