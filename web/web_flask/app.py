@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, redirect, render_template, request, jsonify, session
 # import threading
 # from mqttClass import MQTTClient
 from ..dbClass import DBClient
@@ -9,6 +9,9 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 db_client = DBClient()
+usersDBClient = DBClient(connect=False)
+
+print("App started")
 
 # MQTT broker details
 # broker = "test.mosquitto.org"
@@ -40,9 +43,11 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
-    device_id = request.json.get('deviceID')
+    device_id = request.form.get('deviceID')
     session['device_id'] = device_id
-    return jsonify({"message": "Login successful", "deviceID": device_id})
+    # redirect to messages page
+    return redirect('/messages', code=302)
+    
 
 @app.route('/messages')
 def get_messages():
@@ -50,7 +55,10 @@ def get_messages():
     if not device_id:
         return jsonify({"error": "Not logged in"}), 403
 
-    messages = db_client.get_messages(device_id)
+    usersDBClient.connect()
+    messages = usersDBClient.get_messages(device_id)
+    print(f"Messages: {messages}")
+    usersDBClient.disconnect()
     return jsonify(messages)
 
 if __name__ == '__main__':

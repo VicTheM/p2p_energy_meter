@@ -33,11 +33,26 @@ class DBClient:
     __accounttable__ = "accounts"
     __messagetable__ = "messages"
 
-    def __init__(self, dbname=None):
+    def __init__(self, dbname=None, connect=True):
         if dbname:
             self.__dbname__ = dbname
-        self.conn = sqlite3.connect(self.__dbname__)
-        self.create_tables()
+        if connect:
+            self.conn = sqlite3.connect(self.__dbname__)
+            self.create_tables()
+        else:
+            self.conn = None
+
+    def connect(self):
+        try:
+            self.conn.execute("SELECT 1")
+        except Exception as e:
+            self.conn = sqlite3.connect(self.__dbname__)
+            self.create_tables()
+
+    def disconnect(self):
+        if self.conn:
+            self.conn.close()
+            self.conn = None
 
     def create_tables(self):
         with self.conn:
@@ -193,4 +208,4 @@ class DBClient:
             """, (new_balance, device_id))
 
     def __del__(self):
-        self.conn.close()
+        self.disconnect()

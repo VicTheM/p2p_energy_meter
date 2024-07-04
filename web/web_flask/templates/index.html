@@ -1,4 +1,4 @@
-<!-- templates/index.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,54 +47,15 @@
         .container form input[type="submit"]:hover {
             background: #0056b3;
         }
-        .messages {
-            margin-top: 20px;
-        }
     </style>
-    <script>
-        function login(event) {
-            event.preventDefault();
-            const deviceID = document.getElementById('deviceID').value;
-            fetch('/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ deviceID: deviceID })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(data.error);
-                } else {
-                    fetchMessages();
-                }
-            });
-        }
-
-        function fetchMessages() {
-            fetch('/messages')
-            .then(response => response.json())
-            .then(messages => {
-                const messagesContainer = document.getElementById('messages');
-                messagesContainer.innerHTML = '';
-                messages.forEach(message => {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.textContent = JSON.stringify(message);
-                    messagesContainer.appendChild(messageDiv);
-                });
-            });
-        }
-    </script>
 </head>
 <body>
     <div class="container">
         <h1>Device Message Viewer</h1>
-        <form onsubmit="login(event)">
-            <input type="text" id="deviceID" name="deviceID" placeholder="Enter Device ID" required>
+        <form action="/login" method="post">
+            <input type="text" name="deviceID" placeholder="Enter Device ID" required>
             <input type="submit" value="View Messages">
         </form>
-        <div id="messages" class="messages"></div>
     </div>
 </body>
 </html>
