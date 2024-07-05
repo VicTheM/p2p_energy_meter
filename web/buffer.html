@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Actions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .frame {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+        }
+        button, input[type="submit"] {
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 2px;
+            cursor: pointer;
+        }
+        input[type="number"] {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        hr {
+            border: 1px solid #ddd;
+        }
+        .logout {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .frame {
+                width: 90%;
+            }
+            .logout {
+                top: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Account Actions</h1>
+
+    <!-- Logout Button -->
+    <button class="logout" onclick="location.href='/logout'">Logout</button>
+
+    <div class="container">
+        <!-- Actions Frame -->
+        <div class="frame">
+            <h2>Actions</h2>
+            <button onclick="location.href='/actions?send=true'">Send</button>
+            <button onclick="location.href='/actions?receive=true'">Receive</button>
+            <button onclick="location.href='/actions?disconnect=true'">Disconnect</button>
+        </div>
+
+        <!-- Credit Account Frame -->
+        <div class="frame">
+            <h2>Credit Account</h2>
+            <form action="/credit" method="post">
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" name="amount" required>
+                <input type="submit" value="Credit">
+            </form>
+        </div>
+
+        <!-- Account Details Frame -->
+        <div class="frame">
+            <h2>Account Details</h2>
+            <div id="account-details">
+                <!-- The previous account balance and other details will be displayed here -->
+                <p>Previous Account Balance: $<span id="balance">1000.00</span></p>
+                <p>Other Details: <span id="details">Sample details go here.</span></p>
+            </div>
+        </div>
+
+        <!-- Meter Details Frame -->
+        <div class="frame">
+            <h2>Meter Details</h2>
+            <div id="meter-details">
+                <p>Total Power Sent: <span id="powersent">1000.00W</span></p>
+                <p>Total Power Received: <span id="powerreceived">20W</span></p>
+                <p>Current State: <span id="state">Receiving</span></p>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

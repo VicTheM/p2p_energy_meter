@@ -1,4 +1,5 @@
 # Description: Class to handle MQTT communication
+import re
 import paho.mqtt.client as mqtt
 import json
 
@@ -84,7 +85,22 @@ class MQTTClient:
         }
         """
         deviceID = message.topic.split('/')[-1]
-        info = json.loads(message.payload.decode())
+        
+        # Decode the payload
+        decoded_payload = message.payload.decode()
+        
+        # Replace single quotes with double quotes
+        decoded_payload = decoded_payload.replace("'", '"')
+        
+        # Ensure keys are properly quoted (in case they are not)
+        decoded_payload = re.sub(r'(\w+):', r'"\1":', decoded_payload)
+        
+        try:
+            info = json.loads(decoded_payload)
+        except json.JSONDecodeError as e:
+            print(f"JSON decoding error: {e}")
+            return None
+        
         return {
             "deviceID": deviceID,
             "state": info["state"],
