@@ -1,9 +1,11 @@
 # app.py
 from flask import Flask, redirect, render_template, request, jsonify, session
-# import threading
-# from mqttClass import MQTTClient
 from ..dbClass import DBClient
 import os
+import subprocess
+
+# Execute b.py
+subprocess.Popen(['python', '../mqttWatcher.py'])
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -13,14 +15,15 @@ usersDBClient = DBClient(connect=False)
 
 print("App started")
 
-# MQTT broker details
+# # MQTT broker details
 # broker = "test.mosquitto.org"
 # port = 1883
+# subscribe_topic = "data/1/+"
 
 # mqtt_client = MQTTClient(broker, port)
 
 # def listen_to_mqtt():
-#     mqtt_client.subscribe("state/1/+")
+#     mqtt_client.subscribe(subscribe_topic)
 #     while True:
 #         message = mqtt_client.get_message()
 #         if message:
@@ -45,12 +48,12 @@ def index():
 def login():
     device_id = request.form.get('deviceID')
     session['device_id'] = device_id
-    # redirect to messages page
     return redirect('/messages', code=302)
     
 
 @app.route('/messages')
 def get_messages():
+    """The SPA"""
     device_id = session.get('device_id')
     if not device_id:
         return jsonify({"error": "Not logged in"}), 403
@@ -60,6 +63,10 @@ def get_messages():
     print(f"Messages: {messages}")
     usersDBClient.disconnect()
     return jsonify(messages)
+
+# @app.route('/actions')
+
+# @app.route('/credit')
 
 if __name__ == '__main__':
     app.run(debug=True)
