@@ -21,8 +21,8 @@ void setup()
   // Set Pin Modes
   pinMode(LOAD, OUTPUT);
   pinMode(SUPPLY, OUTPUT);
-  pinMode(VOLTAGE, INPUT);
-  pinMode(CURRENT, INPUT);
+  // pinMode(VOLTAGE, INPUT);
+  // pinMode(CURRENT, INPUT);
   pinMode(DISCONNECT, OUTPUT);
 
   // Initializations
@@ -97,6 +97,7 @@ void loop()
         if (readyToSend(prev));
         {
           Serial.print(".");
+          prev = millis();
         }
         delay(500);
         client.loop();
@@ -120,6 +121,7 @@ void loop()
         if (readyToSend(prev))
         {
           sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+          prev = millis();
         }
         delay(500);
         client.loop();
@@ -143,6 +145,7 @@ void loop()
         if (readyToSend(prev))
         {
           sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+          prev = millis();
         }
         delay(500);
         client.loop();

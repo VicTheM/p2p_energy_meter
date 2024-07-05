@@ -17,13 +17,13 @@ INSERTS THE HEADER.H FILE, METER.INO FILE AND OTHER .CPP FILE IN ANY ORDER
 
 #define MQTT_PORT 1883
 #define SEND_FREQ (60000)          // How often data should be sent in millisecs. 60,000 = 1 minute
+#define LOAD 12
+#define SUPPLY 14
+#define DISCONNECT 27
 
 /*------------------------------------ Global Variables ----------------------------------------*/
 extern const char* WIFI_SSID;
 extern const char* WIFI_PASSWORD;
-extern const int LOAD;
-extern const int SUPPLY;
-extern const int DISCONNECT;
 extern const int VOLTAGE;
 extern const int CURRENT;
 extern u_int8_t currentState;
