@@ -26,18 +26,19 @@ CONTROLLER IS SUBSCRIBED TO
  */
 bool configWiFiStation(const char * ssid, const char * passkey)
 {
-    unsigned int WiFiConnectAttempt = 20;
+    unsigned int WiFiConnectAttempt = 30;
     Serial.print("\n\n\nConnecting WiFi to ");
     Serial.println(ssid);
 
     WiFi.begin(ssid, passkey);
-    while (((!wiFiIsConnected()) && (WiFiConnectAttempt != 0)))
+    while (WiFi.status() != WL_CONNECTED)
     {
       // Loop to reattempt wifi connection if not connected and connect Attempt not exceeded
-      WiFi.begin(ssid, passkey);
+      WiFiConnectAttempt--;
       Serial.print(".");
-      WiFiConnectAttempt -= 1;
-      delay(500);
+      if (WiFiConnectAttempt == 0)
+        break;
+      delay(100);
     }
 
     if (wiFiIsConnected()){
@@ -48,6 +49,7 @@ bool configWiFiStation(const char * ssid, const char * passkey)
         return (true);
     }
     Serial.println("Wifi Connection Failed");
+    WiFi.mode(WIFI_STA);
     return (false);
 }
 

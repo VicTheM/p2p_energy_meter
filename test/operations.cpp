@@ -39,7 +39,7 @@ float readCurrentData()
 {
     // For now, let's just return a random number
 
-    return (random(0, 100));
+    return (random(220, 350));
 }
 
 

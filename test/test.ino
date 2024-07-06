@@ -69,17 +69,20 @@ void setup()
 
 
 // The Main Loop
-unsigned long start;
+unsigned long start = 0;
+unsigned int temp = 0;
 unsigned long prev = 0;
 void loop()
 {
+  start = millis();
   if (wiFiIsConnected())
   {
     // The main program logic starts here
     if (acknowledge)
     {
       acknowledge = false;
-      sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(millis()));
+      Serial.println("Sending acknoledged data");
+      sendData(currentState, readVoltageData(), readCurrentData(), 0);
     }
 
     if (currentState == 0)
@@ -92,6 +95,7 @@ void loop()
 
       prev = millis();
       change = false;
+      sendData(currentState, 0, 0, 0);
       while (!change)
       {
         if (readyToSend(prev));
@@ -113,14 +117,13 @@ void loop()
       Serial.println("Sending");
 
       change = false;
-      sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+      sendData(currentState, readVoltageData(), readCurrentData(), 0.5);
       prev = millis();
       while (!change)
       {
-        start = millis();
         if (readyToSend(prev))
         {
-          sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+          sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(prev));
           prev = millis();
         }
         delay(500);
@@ -137,14 +140,14 @@ void loop()
       Serial.println("Receiving");
 
       change = false;
-      sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+      sendData(currentState, readVoltageData(), readCurrentData(), 0.5);
       prev = millis();
       while (!change)
       {
         start = millis();
         if (readyToSend(prev))
         {
-          sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(start));
+          sendData(currentState, readVoltageData(), readCurrentData(), stopTimer(prev));
           prev = millis();
         }
         delay(500);
