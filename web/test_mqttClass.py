@@ -1,5 +1,5 @@
 import unittest
-from web.web_flask.mqttClass import Message
+from web.mqttClass import Message
 
 class TestMessage(unittest.TestCase):
     def test_from_dict(self):

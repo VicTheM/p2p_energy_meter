@@ -3,93 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Actions</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 20px;
-        }
-        h1, h2 {
-            text-align: center;
-        }
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-        }
-        .frame {
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin: 20px;
-            padding: 20px;
-            width: 300px;
-            text-align: center;
-        }
-        button, input[type="submit"] {
-            background-color: #4CAF50;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 10px 2px;
-            cursor: pointer;
-        }
-        input[type="number"] {
-            width: 80%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        hr {
-            border: 1px solid #ddd;
-        }
-        .logout {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-        .logo {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            box-shadow: none;
-            opacity: 0.7;
-        }
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                align-items: center;
-            }
-            .frame {
-                width: 90%;
-            }
-            .logout {
-                top: 10px;
-                right: 10px;
-            }
-            .logo {
-                top: 10px;
-                left: 10px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="test.css">
+    <title>Dash Board</title>
     <script>
-        async function handleAction(action) {
+        function validateInput(input) {
+            const amount = parseFloat(input.value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Invalid input: Please enter a positive number.');
+                return false;
+            }
+            return true;
+        }
+
+        async function handleAction(state) {
             try {
-                const response = await fetch(`/actions?${action}=true`);
+                const response = await fetch(`/actions?state=${state}`, {
+                    method: 'POST'
+                });
                 const data = await response.json();
                 updatePage(data);
             } catch (error) {
@@ -100,13 +30,15 @@
         async function handleCredit(event) {
             event.preventDefault();
             const amount = document.getElementById('amount').value;
+            if (!validateInput(document.getElementById('amount'))) {
+                return;
+            }
             try {
-                const response = await fetch('/credit', {
+                const response = await fetch(`/actions?credit=${amount}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ amount })
+                    }
                 });
                 const data = await response.json();
                 updatePage(data);
@@ -137,9 +69,9 @@
         <!-- Actions Frame -->
         <div class="frame">
             <h2>Actions</h2>
-            <button onclick="handleAction('send')">Send</button>
-            <button onclick="handleAction('receive')">Receive</button>
-            <button onclick="handleAction('disconnect')">Disconnect</button>
+            <button onclick="handleAction(1)">Share</button>
+            <button onclick="handleAction(2)">Receive</button>
+            <button onclick="handleAction(0)">Disconnect</button>
         </div>
 
         <!-- Credit Account Frame -->

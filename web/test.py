@@ -12,22 +12,22 @@ broker = "test.mosquitto.org"
 port = 1883
 subtopic = "data/1/+"
 
-client = MQTTClient(broker, port)
-client.subscribe(subtopic)
+# client = MQTTClient(broker, port)
+# client.subscribe(subtopic)
 
 
-while True:
-    message = client.get_message()
-    if message:
-        print(f"*************   {message.to_dict()}")
-        print(type(message.current))
-        print(type(message.voltage))
-        print(type(message.duration))
-        print(type(message.state))
-        print(type(message.deviceID))
+# while True:
+#     message = client.get_message()
+#     if message:
+#         print(f"*************   {message.to_dict()}")
+#         print(type(message.current))
+#         print(type(message.voltage))
+#         print(type(message.duration))
+#         print(type(message.state))
+#         print(type(message.deviceID))
 
-        dbclient.add_message(message.deviceID, message.state, message.voltage, message.current, message.duration) # Add message to database
+#         dbclient.add_message(message.deviceID, message.state, message.voltage, message.current, message.duration) # Add message to database
 
-        print("***************************************************************************************")    
-        print(dbclient.get_messages('001'))
-        print("----------------------------------------------------------------------------------------")
+print("***************************************************************************************")    
+print(dbclient.get_messages('001'))
+print("----------------------------------------------------------------------------------------")

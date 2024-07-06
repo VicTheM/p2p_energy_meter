@@ -6,8 +6,8 @@
 const char* WIFI_SSID = "Electrify"; // "unilag.wifi.int23"
 const char* WIFI_PASSWORD = "Victory111"; //"2524767676"
 const char* MQTT_BROKER = "test.mosquitto.org";
-const char* MQTT_SUB_TOPIC = "commands/1/2232332606"; // of the form "commands/<node>/<deviceID>"
-const char* MQTT_PUB_TOPIC = "data/1/2232332606";
+const char* MQTT_SUB_TOPIC = "commands/1/001"; // of the form "commands/<node>/<deviceID>"
+const char* MQTT_PUB_TOPIC = "data/1/001";
 const char* CLIENT_ID = "House A";
 
 u_int8_t currentState  = 0;
