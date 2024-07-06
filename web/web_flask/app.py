@@ -4,6 +4,7 @@ from ..dbClass import DBClient
 from ..mqttClass import MQTTClient
 import os
 import subprocess
+from .. import utilFunctions as func
 
 broker = "test.mosquitto.org"
 port = 1883
@@ -11,41 +12,108 @@ subtopic = "data/1/{}" # deviceID is the last part of the topic
 pubtopic = "commands/1/{}"
 
 subprocess.Popen(['python', '../mqttWatcher.py'])
-
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 usersDBClient = DBClient(connect=False)
 mqttClient = MQTTClient(broker, port)
 
-@app.route('/', methods = ['GET', 'POST'])
+
+@app.route('/', methods = ['GET'])
 def index():
     return render_template('index.html')
 
 @app.route('/login', methods=['POST'])
 def login():
     device_id = request.form.get('deviceID')
-    print(type(device_id))
     usersDBClient.connect()
     user = usersDBClient.get_user(device_id)
-    usersDBClient.disconnect()
     if not user:
         return jsonify({"ERROR": f"No device with id '{device_id}'"}), 404
     session['device_id'] = device_id
-    return redirect('/messages', code=302)
-    
 
-@app.route('/messages')
+    account_balance = usersDBClient.get_account_balance(device_id)[0]
+    messages = usersDBClient.get_messages(device_id)
+    usersDBClient.disconnect()
+    
+    totalPowerReceived = 0
+    totalPowerSent = 0
+    state = 0
+    voltage = 0
+    current = 0
+    duration = 0
+    if len(messages) > 0:
+        state = messages[0][1]
+        voltage = messages[0][2]
+        current = messages[0][3]
+        duration = messages[0][4]
+        sending = [message for message in messages if message[1] == 1]
+        if len(sending) > 0:
+            totalPowerSent = func.calculate_energy(sending)
+        receiving = [message for message in messages if message[1] == 2]
+        if len(receiving) > 0:
+            totalPowerReceived = func.calculate_energy(receiving)
+        print(sending)
+        print(receiving)
+
+    print(messages)
+
+    return render_template(
+        'dashboard.html',
+        device_id=device_id,
+        state=state,
+        voltage=voltage,
+        current=current,
+        duration=duration,
+        account_balance=account_balance,
+        totalPowerSent=totalPowerSent,
+        totalPowerReceived=totalPowerReceived
+        )
+
+    # return jsonify({"device_id": device_id, "state": state, "voltage": voltage, "current": current, "duration": duration, "account_balance": account_balance})  
+
+@app.route('/updatepage')
 def get_messages():
     """The SPA"""
     device_id = session.get('device_id')
     if not device_id:
         return jsonify({"error": "Not logged in"}), 403
-
+    
     usersDBClient.connect()
+    account_balance = usersDBClient.get_account_balance(device_id)[0]
     messages = usersDBClient.get_messages(device_id)
     usersDBClient.disconnect()
-    return jsonify(messages)
+    
+    totalPowerReceived = 0
+    totalPowerSent = 0
+    state = 0
+    voltage = 0
+    current = 0
+    duration = 0
+    if len(messages) > 0:
+        state = messages[0][1]
+        voltage = messages[0][2]
+        current = messages[0][3]
+        duration = messages[0][4]
+        sending = [message for message in messages if message[1] == 1]
+        if len(sending) > 0:
+            totalPowerSent = func.calculate_energy(sending)
+        receiving = [message for message in messages if message[1] == 2]
+        if len(receiving) > 0:
+            totalPowerReceived = func.calculate_energy(receiving)
+        print(sending)
+        print(receiving)
+
+    payload = {
+        "state": state,
+        "voltage": voltage,
+        "current": current,
+        "duration": duration,
+        "account_balance": account_balance,
+        "totalPowerSent": totalPowerSent,
+        "totalPowerReceived": totalPowerReceived
+    }
+    return jsonify(payload)
 
 @app.route('/actions', methods=['POST'])
 def actions():
@@ -67,9 +135,6 @@ def actions():
         usersDBClient.update_account_balance(device_id, credit)
         usersDBClient.disconnect()
 
-        print(f"previous balance: {prev_balance}")
-        print(f"credit added: {amount}")
-        print(f"current balance: {credit}")
         return jsonify({"credit": credit})
     
     if state:

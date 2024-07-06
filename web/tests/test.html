@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="test.css">
     <title>Dash Board</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css')}}">
     <script>
         function validateInput(input) {
             const amount = parseFloat(input.value);
@@ -42,25 +42,65 @@
                 });
                 const data = await response.json();
                 updatePage(data);
+
+                // Show success feedback
+                const feedback = document.getElementById('credit-feedback');
+                feedback.textContent = 'Credit successful!';
+                feedback.style.display = 'inline';
+                
+                // Clear the input field
+                document.getElementById('amount').value = '';
+
+                // Hide the feedback after 3 seconds
+                setTimeout(() => {
+                    feedback.style.display = 'none';
+                }, 3000);
             } catch (error) {
                 console.error('Error:', error);
             }
         }
 
         function updatePage(data) {
-            document.getElementById('balance').textContent = data.balance;
-            document.getElementById('details').textContent = data.details;
-            document.getElementById('powersent').textContent = data.powersent;
-            document.getElementById('powerreceived').textContent = data.powerreceived;
-            document.getElementById('state').textContent = data.state;
+            if ('error' in data) {
+                alert(data.error);
+                return;
+            }
+            if ('credit' in data) {
+                document.getElementById('balance').textContent = data.credit;
+            }
+            if ('details' in data) {
+                document.getElementById('details').textContent = data.details;
+            }
+            if ('powersent' in data) {
+                document.getElementById('powersent').textContent = data.powersent;
+            }
+            if ('powerreceived' in data) {
+                document.getElementById('powerreceived').textContent = data.powerreceived;
+            }
+            if ('state' in data) {
+                document.getElementById('state').textContent = data.state;
+            }
         }
+
+        async function fetchUpdates() {
+            try {
+                const response = await fetch('/updatepage');
+                const data = await response.json();
+                updatePage(data);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Schedule the fetchUpdates function to run every 30 seconds
+        setInterval(fetchUpdates, 10000);
     </script>
 </head>
 <body>
     <h1>Account Actions</h1>
 
     <!-- Logo Image -->
-    <img class="logo" src="logo.png" alt="Logo">
+    <img class="logo" src="{{ url_for('static', filename='img/logo.png')}}" alt="Logo">
 
     <!-- Logout Button -->
     <button class="logout" onclick="location.href='/logout'">Logout</button>
@@ -81,6 +121,7 @@
                 <label for="amount">Amount:</label>
                 <input type="number" id="amount" name="amount" required>
                 <input type="submit" value="Credit">
+                <span id="credit-feedback" style="display: none; color: green; margin-left: 10px;"></span>
             </form>
         </div>
 
@@ -89,8 +130,8 @@
             <h2>Account Details</h2>
             <div id="account-details">
                 <!-- The previous account balance and other details will be displayed here -->
-                <p>Previous Account Balance: $<span id="balance">1000.00</span></p>
-                <p>Other Details: <span id="details">Sample details go here.</span></p>
+                <p>Account Balance: $<span id="balance">{{ account_balance }}</span></p>
+                <p>Other Details: <span id="details">{{ voltage }}V, {{ current }}A, {{ power }}W, {{ duration }}s</span></p>
             </div>
         </div>
 
@@ -98,12 +139,11 @@
         <div class="frame">
             <h2>Meter Details</h2>
             <div id="meter-details">
-                <p>Total Power Sent: <span id="powersent">1000.00W</span></p>
-                <p>Total Power Received: <span id="powerreceived">20W</span></p>
-                <p>Current State: <span id="state">Receiving</span></p>
+                <p>Total Power Sent: <span id="powersent">{{ totalPowerSent }}</span>W</p>
+                <p>Total Power Received: <span id="powerreceived">{{ totalPowerReceived }}</span>W</p>
+                <p>Current State: <span id="state">{{ state }}</span></p>
             </div>
         </div>
     </div>
-    
 </body>
 </html>

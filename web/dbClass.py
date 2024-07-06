@@ -17,7 +17,7 @@ class DBClient:
 
     - messages: Has the following fields
             * DeviceID (foreign key)
-            * state (boolean)
+            * state (int)
             * voltage (float)
             * current (float)
             * duration (float)
