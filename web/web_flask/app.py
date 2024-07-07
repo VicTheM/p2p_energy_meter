@@ -11,12 +11,12 @@ port = 1883
 subtopic = "data/1/{}" # deviceID is the last part of the topic
 pubtopic = "commands/1/{}"
 
-subprocess.Popen(['python', '../mqttWatcher.py'])
+# subprocess.Popen(['python', '../mqttWatcher.py'])
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 usersDBClient = DBClient(connect=False)
-mqttClient = MQTTClient(broker, port)
+# mqttClient = MQTTClient(broker, port)
 
 
 @app.route('/', methods = ['GET'])
@@ -53,10 +53,6 @@ def login():
         receiving = [message for message in messages if message[1] == 2]
         if len(receiving) > 0:
             totalPowerReceived = func.calculate_energy(receiving)
-        print(sending)
-        print(receiving)
-
-    print(messages)
 
     return render_template(
         'dashboard.html',
@@ -101,8 +97,6 @@ def get_messages():
         receiving = [message for message in messages if message[1] == 2]
         if len(receiving) > 0:
             totalPowerReceived = func.calculate_energy(receiving)
-        print(sending)
-        print(receiving)
 
     payload = {
         "state": state,
@@ -139,7 +133,7 @@ def actions():
     
     if state:
         print(f"state: {state}")
-        mqttClient.publish(pubtopic.format(device_id), f'{{"state":{state}, "ack":1}}')
+        # mqttClient.publish(pubtopic.format(device_id), f'{{"state":{state}, "ack":1}}')
         return jsonify({"state": state})
 
 

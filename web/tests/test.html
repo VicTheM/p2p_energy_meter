@@ -68,14 +68,26 @@
             if ('credit' in data) {
                 document.getElementById('balance').textContent = data.credit;
             }
-            if ('details' in data) {
-                document.getElementById('details').textContent = data.details;
+            if ('account_balance' in data) {
+                document.getElementById('balance').textContent = data.account_balance;
             }
-            if ('powersent' in data) {
-                document.getElementById('powersent').textContent = data.powersent;
+            if ('voltage' in data) {
+                document.getElementById('voltage').textContent = data.voltage;
             }
-            if ('powerreceived' in data) {
-                document.getElementById('powerreceived').textContent = data.powerreceived;
+            if ('current' in data) {
+                document.getElementById('current').textContent = data.current;
+            }
+            if ('duration' in data) {
+                document.getElementById('duration').textContent = data.duration;
+            }
+            if ('current' in data && 'voltage' in data) {
+                document.getElementById('power').textContent = data.current * data.voltage / 1000;
+            }
+            if ('totalPowerSent' in data) {
+                document.getElementById('totalPowerSent').textContent = data.totalPowerSent;
+            }
+            if ('totalPowerReceived' in data) {
+                document.getElementById('totalPowerReceived').textContent = data.totalPowerReceived;
             }
             if ('state' in data) {
                 document.getElementById('state').textContent = data.state;
@@ -93,7 +105,7 @@
         }
 
         // Schedule the fetchUpdates function to run every 30 seconds
-        setInterval(fetchUpdates, 10000);
+        setInterval(fetchUpdates, 6000);
     </script>
 </head>
 <body>
@@ -131,7 +143,6 @@
             <div id="account-details">
                 <!-- The previous account balance and other details will be displayed here -->
                 <p>Account Balance: $<span id="balance">{{ account_balance }}</span></p>
-                <p>Other Details: <span id="details">{{ voltage }}V, {{ current }}A, {{ power }}W, {{ duration }}s</span></p>
             </div>
         </div>
 
@@ -139,11 +150,16 @@
         <div class="frame">
             <h2>Meter Details</h2>
             <div id="meter-details">
-                <p>Total Power Sent: <span id="powersent">{{ totalPowerSent }}</span>W</p>
-                <p>Total Power Received: <span id="powerreceived">{{ totalPowerReceived }}</span>W</p>
+                <p>Total Power Sent: <span id="totalPowerSent">{{ totalPowerSent }}</span>W</p>
+                <p>Total Power Received: <span id="totalPowerReceived">{{ totalPowerReceived }}</span>W</p>
+                <p>Operating Voltage: <span id="voltage">{{ voltage }}</span>V</p>
+                <p>instantaneous Current: <span id="current">{{ current }}</span>mA</p>
+                <p>instantaneous Power: <span id="power">{{ voltage * current / 1000 }}</span>W</p>
+                <p>Current Session: <span id="duration">{{ duration }}</span>s</p>
                 <p>Current State: <span id="state">{{ state }}</span></p>
             </div>
         </div>
     </div>
 </body>
 </html>
+
