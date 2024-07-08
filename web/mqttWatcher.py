@@ -15,4 +15,5 @@ print("Started MQTT watcher")
 while True:
     message = client.get_message()
     if message:
+        print(message)
         dbclient.add_message(message.deviceID, message.state, message.voltage, message.current, message.duration) # Add message to database

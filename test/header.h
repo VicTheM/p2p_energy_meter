@@ -13,7 +13,7 @@ INSERTS THE HEADER.H FILE, METER.INO FILE AND OTHER .CPP FILE IN ANY ORDER
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <Preferences.h>
-#include <PubSubClient.h>
+#include <PubSubClient.h>]=[p]
 
 #define MQTT_PORT 1883
 #define SEND_FREQ (5000)          // How often data should be sent in millisecs. 60,000 = 1 minute

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test</title>
+    <style>
+      .button-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        height: 200px;
+        width: 200px;
+      }
+      .button {
+        background: black;
+        display: inline-block;
+        width: 100px;
+        height: 50px;
+        border-radius: 25px;
+        padding: 5px;
+        box-sizing: border-box;
+      }
+
+      .toggle {
+        display: inline-block;
+        background: red;
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        transition: all 0.5s;
+      }
+
+      .active {
+        background: green;
+        transform: translateX(50px);
+      }
+
+      .switch-label {
+        font-size: 20px;
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="button-container">
+      <label for="switch" class="switch-label">Toggle</label>
+      <div class="button">
+        <div class="toggle">&nbsp;</div>
+      </div>
+    </div>
+  </body>
+  <script>
+    let button = document.querySelector(".button");
+    let toggle = document.querySelector(".toggle");
+    button.addEventListener("click", function () {
+      toggle.classList.toggle("active");
+    });
+  </script>
+</html>
