@@ -57,7 +57,6 @@ async function handleCredit(event) {
 }
 
 function handleToggle(newState, shouldPost) {
-    console.log(`New state ${newState}`);
     if (newState === 3) {
         document.getElementById('offline-text').style.display = 'block';
         document.getElementById('share').checked = false;
@@ -71,12 +70,12 @@ function handleToggle(newState, shouldPost) {
         allToggles[2].checked = (newState === 2);
         
         stateText.textContent = newState;
-        allToggles.forEach((toggle) => {
-            toggle.disabled = true;
-            setTimeout(() => {
-                toggle.disabled = false;
-            }, 3000)
-        })
+        // allToggles.forEach((toggle) => {
+        //     toggle.disabled = true;
+        //     setTimeout(() => {
+        //         toggle.disabled = false;
+        //     }, 3000)
+        // })
     }
     
     if(shouldPost) handleAction(newState);
@@ -99,10 +98,9 @@ function handleCheck(element, newState=undefined) {
         case "disconnect":
             handleToggle(0, switcher==='disconnect');
             break;
+        default:
+            handleToggle(3, switcher===3);
     }}
-    else {
-        handleToggle(3);
-    }
 }
 
 function updatePage(data) {
@@ -120,23 +118,23 @@ function updatePage(data) {
     }
     if ('voltage' in data) {
         // console.log(data.voltage);
-        document.getElementById('voltage').textContent = data.voltage.toFixed(2);
+        document.getElementById('voltage').textContent = `${data.voltage.toFixed(2)}V`;
     }
     if ('current' in data) {
-        document.getElementById('current').textContent = data.current.toFixed(2);
+        document.getElementById('current').textContent = `${data.current.toFixed(2)}mA`;
     }
     if ('duration' in data) {
-        document.getElementById('duration').textContent = data.duration;
+        document.getElementById('duration').textContent = `${data.duration}s`;
     }
     if ('current' in data && 'voltage' in data) {
-        document.getElementById('power').textContent = (data.current * data.voltage / 1000).toFixed(2);
+        document.getElementById('power').textContent = `${(data.current * data.voltage / 1000).toFixed(2)}W`;
     }
     if ('totalPowerSent' in data) {
-        document.getElementById('totalPowerSent').textContent = data.totalPowerSent.toFixed(2);
+        document.getElementById('totalPowerSent').textContent = `${data.totalPowerSent.toFixed(2)}W`;
     }
     if ('totalPowerReceived' in data) {
         // console.log(data.totalPowerReceived);
-        document.getElementById('totalPowerReceived').textContent = data.totalPowerReceived.toFixed(2);
+        document.getElementById('totalPowerReceived').textContent = `${data.totalPowerReceived.toFixed(2)}W`;
     }
     if ('state' in data) {
         console.log(data.state, Number(stateText.textContent))
@@ -181,7 +179,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     
 // Schedule the fetchUpdates function to run every 30 seconds
-    setInterval(fetchUpdates, 5000);
+    setInterval(fetchUpdates, 4000);
     // console.log(state);
     handleCheck(undefined, state);
 });
