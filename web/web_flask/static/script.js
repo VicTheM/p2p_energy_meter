@@ -1,6 +1,7 @@
 
 let stateText;
 const switchFrame = document.querySelector('.frame');
+const currFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'NGN', currencyDisplay: 'narrowSymbol' })
 
 function validateInput(input) {
     const amount = parseFloat(input.value);
@@ -114,7 +115,7 @@ function updatePage(data) {
         document.getElementById('balance').textContent = data.credit;
     }
     if ('account_balance' in data) {
-        document.getElementById('balance').textContent = data.account_balance;
+        document.getElementById('balance').textContent = currFormatter.format(data.account_balance);
     }
     if ('voltage' in data) {
         // console.log(data.voltage);
@@ -179,7 +180,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     
 // Schedule the fetchUpdates function to run every 30 seconds
-    setInterval(fetchUpdates, 4000);
+    setInterval(fetchUpdates, 5000);
     // console.log(state);
     handleCheck(undefined, state);
 });

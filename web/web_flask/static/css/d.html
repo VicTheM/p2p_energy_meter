@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dash Board</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css')}}">
+    <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
-    <h1>Welcome! User {{ device_id }}</h1>
+    <h1>Welcome! User 001</h1>
 
     <!-- Logo Image -->
-    <img class="logo" src="{{ url_for('static', filename='img/logo.png')}}" alt="Logo">
+    <img class="logo" src="../img/logo.png" alt="Logo">
 
     <!-- Logout Button -->
     <button class="logout" onclick="location.href='/logout'">Logout</button>
@@ -18,21 +18,21 @@
     <div class="container">
         <!-- Actions Frame -->
         <div class="frame frame-actions">
-            <h2>Actions</h2>
+            <h1>Actions</h1>
             <p id="offline-text" style="display: none; color: gray;">Device is offline</p>
-            <div class="switch_container">
+        <div class="switch_container">
             <label class="switch">
                 <input type="checkbox" id="disconnect">
                 <span class="slider round"></span>
                 <span class="label-text">Disconnect</span>
             </label>
             <label class="switch">
-                <input type="checkbox" id="share" {% if device_id == "002" %} disabled {% endif %}>
+                <input type="checkbox" id="share">
                 <span class="slider round"></span>
                 <span class="label-text">Share</span>
             </label>
             <label class="switch">
-                <input type="checkbox" id="receive" {% if device_id == "001" %} disabled {% endif %}>
+                <input type="checkbox" id="receive">
                 <span class="slider round"></span>
                 <span class="label-text">Receive</span>
             </label>
@@ -42,7 +42,7 @@
 
         <!-- Credit Account Frame -->
         <div class="frame frame-credit">
-            <h2>Credit Account</h2>
+            <h1>Credit Account</h1>
             <form onsubmit="handleCredit(event)">
                 <label for="amount">Amount:</label>
                 <input type="number" id="amount" name="amount" required>
@@ -53,27 +53,27 @@
 
         <!-- Account Details Frame -->
         <div class="frame">
-            <h2>Account Balance</h2>
+            <h1>Account Balance</h1>
             <div id="account-details">
                 <!-- The previous account balance and other details will be displayed here -->
-                <p><span id="balance">{{ account_balance }}</span></p>
+                <p>&#x20A6;<span id="balance">20,500</span></p>
             </div>
         </div>
 
         <!-- Meter Details Frame -->
         <div class="frame">
-            <h2>Meter Dashboard</h2>
+            <h1>Meter Dashboard</h1>
             <div id="meter-details">
-                <p>Total Power Sent: <span id="totalPowerSent">{{ totalPowerSent }}W</span></p>
-                <p>Total Power Received: <span id="totalPowerReceived">{{ totalPowerReceived }}W</span></p>
-                <p>Operating Voltage: <span id="voltage">{{ voltage }}V</span></p>
-                <p>instantaneous Current: <span id="current">{{ current }}mA</span></p>
-                <p>instantaneous Power: <span id="power">{{ voltage * current / 1000 }}W</span></p>
-                <p>Current Session: <span id="duration">{{ duration }}s</span></p>
-                <p>Current State: <span id="state">{{ state }}</span></p>
+                <p>Total Power Sent: <span id="totalPowerSent">1000000W</span></p>
+                <p>Total Power Received: <span id="totalPowerReceived">1000000W</span></p>
+                <p>Operating Voltage: <span id="voltage">1000V</span></p>
+                <p>instantaneous Current: <span id="current">1200mA</span></p>
+                <p>instantaneous Power: <span id="power">1200W</span></p>
+                <p>Current Session: <span id="duration">100s</span></p>
+                <p>Current State: <span id="state">3</span></p>
             </div>
         </div>
     </div>
-    <script defer src="{{ url_for('static', filename='script.js')}}"></script>
+    <script defer src="../script.js"></script>
 </body>
 </html>
