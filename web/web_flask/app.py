@@ -13,7 +13,9 @@ pubtopic = "commands/1/{}"
 
 subprocess.Popen(['python', '../mqttWatcher.py'])
 app = Flask(__name__)
+# app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.secret_key = os.urandom(24)
+
 
 usersDBClient = DBClient(connect=False)
 mqttClient = MQTTClient(broker, port)
@@ -146,6 +148,7 @@ def actions():
 def logout():
     session.pop('device_id', None)
     return redirect('/', code=302)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

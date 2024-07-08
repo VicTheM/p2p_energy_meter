@@ -138,10 +138,10 @@ function updatePage(data) {
     }
     if ('state' in data) {
         console.log(data.state, Number(stateText.textContent))
-        if (data.state !== Number(stateText.textContent)) {
+        // if (data.state !== Number(stateText.textContent)) {
         stateText.textContent = data.state;
         handleCheck(undefined, data.state);
-    }
+    // }
     // if ('newstate' in data) {
     //     console.log(data.newstate);
     //     document.getElementById('state').textContent = data.newstate;
