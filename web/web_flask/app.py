@@ -1,4 +1,8 @@
-# app.py
+"""
+SERVER ENTRY POINT
+
+BOTH THE WEB ROUTES AND API ARE DEFINED HERE
+"""
 from flask import Flask, redirect, render_template, request, jsonify, session
 from ..dbClass import DBClient
 from ..mqttClass import MQTTClient

@@ -1,3 +1,8 @@
+"""
+THIS FILE DEFINES THE MQTT CLIENT THAT LISTENS ON
+THE BROKER AND RELAYS TGE MESSAGES TO THE DATABASE
+"""
+
 from mqttClass import MQTTClient
 from dbClass import DBClient
 
@@ -15,5 +20,4 @@ print("Started MQTT watcher")
 while True:
     message = client.get_message()
     if message:
-        print(message)
         dbclient.add_message(message.deviceID, message.state, message.voltage, message.current, message.duration) # Add message to database

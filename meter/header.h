@@ -16,16 +16,14 @@ INSERTS THE HEADER.H FILE, METER.INO FILE AND OTHER .CPP FILE IN ANY ORDER
 #include <PubSubClient.h>
 
 #define MQTT_PORT 1883
-#define SEND_FREQ 60000          // How often data should be sent in millisecs. 60,000 = 1 minute
+#define SEND_FREQ (5000)          // How often data should be sent in millisecs. 60,000 = 1 minute
+#define LOAD 17
+#define SUPPLY 27
+#define DISCONNECT 15
 
 /*------------------------------------ Global Variables ----------------------------------------*/
 extern const char* WIFI_SSID;
 extern const char* WIFI_PASSWORD;
-extern const int LOAD;
-extern const int SUPPLY;
-extern const int DISCONNECT;
-extern const int VOLTAGE;
-extern const int CURRENT;
 extern u_int8_t currentState;
 extern bool change;
 extern bool acknowledge;

@@ -14,15 +14,6 @@ u_int8_t currentState  = 0;
 bool change = false;
 bool acknowledge = false;
 
-/*-------------------------------------- GPIO Pins ------------------------------------------------*/
-const int LOAD = 14;                                             // Pin to control load relay
-const int SUPPLY = 12;                                           // Pin to control supply relay
-const int DISCONNECT = 34;
-const int VOLTAGE = 33;                                          // Pin to read voltage
-const int CURRENT = 35;                                          // Pin to read current
-
-
-
 
 /*------------------------------------ Function Definiions ----------------------------------------*/
 /**
@@ -48,7 +39,7 @@ float readCurrentData()
 {
     // For now, let's just return a random number
 
-    return (random(0, 100));
+    return (random(220, 350));
 }
 
 
@@ -127,7 +118,7 @@ bool sendData(uint8_t state, float voltage, float current, float time)
   doc["state"] = state;
   doc["voltage"] = voltage;
   doc["current"] = current;
-  doc["time"] = time;
+  doc["duration"] = time;
 
   char payload[1024];
   serializeJson(doc, payload);
