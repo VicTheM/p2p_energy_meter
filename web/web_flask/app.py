@@ -150,6 +150,7 @@ def actions():
 
     return jsonify({"message": "success"})
 
+
 @app.route('/logout')
 def logout():
     session.pop('device_id', None)
