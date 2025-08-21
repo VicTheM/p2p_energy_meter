@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Dashboard - Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard_modern.css')}}">
+    <!-- Lucide Icons CDN for modern icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        /* Additional styles for login page */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(8, 145, 178, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+            padding: 1rem;
+        }
+        
+        .login-card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) * 2);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .login-header {
+            margin-bottom: 2rem;
+        }
+        
+        .login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 4rem;
+            height: 4rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 1rem;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .login-logo-icon {
+            width: 2rem;
+            height: 2rem;
+            color: white;
+        }
+        
+        .login-title {
+            font-size: 1.875rem;
+            margin: 0 0 0.5rem 0;
+            color: var(--foreground);
+        }
+        
+        .login-subtitle {
+            color: var(--muted-foreground);
+            margin: 0;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .login-input-group {
+            position: relative;
+        }
+        
+        .login-input {
+            width: 100%;
+            height: 3.5rem;
+            padding: 0 1rem 0 3rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            background-color: var(--input);
+            font-size: 1rem;
+            color: var(--foreground);
+            transition: all 0.2s;
+        }
+        
+        .login-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--ring);
+        }
+        
+        .login-input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.25rem;
+            height: 1.25rem;
+            color: var(--muted-foreground);
+            pointer-events: none;
+        }
+        
+        .login-button {
+            height: 3.5rem;
+            background: linear-gradient(135deg, var(--primary), #0e7490);
+            color: var(--primary-foreground);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .login-button:hover {
+            background: linear-gradient(135deg, #0e7490, var(--primary));
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(8, 145, 178, 0.4);
+        }
+        
+        .login-button:active {
+            transform: translateY(0);
+        }
+        
+        .login-footer {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+        }
+        
+        .feature-list {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .feature-icon {
+            width: 1rem;
+            height: 1rem;
+            color: var(--primary);
+        }
+        
+        @media (max-width: 640px) {
+            .login-card {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .feature-list {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">
+                    <i data-lucide="zap" class="login-logo-icon"></i>
+                </div>
+                <h1 class="login-title heading-primary">Energy Dashboard</h1>
+                <p class="login-subtitle body-text">Access your device control interface</p>
+            </div>
+            
+            <form action="/login" method="post" class="login-form">
+                <div class="login-input-group">
+                    <i data-lucide="smartphone" class="login-input-icon"></i>
+                    <input 
+                        type="text" 
+                        name="deviceID" 
+                        class="login-input body-text" 
+                        placeholder="Enter Device ID" 
+                        required
+                        autocomplete="off"
+                    >
+                </div>
+                
+                <button type="submit" class="login-button heading-secondary">
+                    <i data-lucide="log-in" class="btn-icon"></i>
+                    Access Dashboard
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <p class="body-text">Secure energy management platform</p>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <i data-lucide="shield-check" class="feature-icon"></i>
+                        <span>Secure</span>
+                    </div>
+                    <div class="feature-item">
+                        <i data-lucide="zap" class="feature-icon"></i>
+                        <span>Real-time</span>
+                    </div>
+                    <div class="feature-item">
+                        <i data-lucide="smartphone" class="feature-icon"></i>
+                        <span>Mobile Ready</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Add some interactive feedback
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('.login-form');
+            const input = document.querySelector('.login-input');
+            const button = document.querySelector('.login-button');
+            
+            // Add loading state on form submission
+            form.addEventListener('submit', function() {
+                button.innerHTML = '<i data-lucide="loader-2" class="btn-icon" style="animation: spin 1s linear infinite;"></i>Connecting...';
+                button.disabled = true;
+                lucide.createIcons();
+            });
+            
+            // Add focus effects
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+    
+    <style>
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</body>
+</html>
+

@@ -4,13 +4,13 @@ SERVER ENTRY POINT
 BOTH THE WEB ROUTES AND API ARE DEFINED HERE
 """
 from flask import Flask, redirect, render_template, request, jsonify, session
-from dbClass import DBClient
-from mqttClass import MQTTClient
+from ..dbClass import DBClient
+from ..mqttClass import MQTTClient
 import os
 import subprocess
-import utilFunctions as func
+from .. import utilFunctions as func
 
-broker = "broker.hivemq.com"
+broker = "test.mosquitto.org"
 port = 1883
 subtopic = "data/1/{}" # deviceID is the last part of the topic
 pubtopic = "commands/1/{}"
@@ -28,7 +28,7 @@ mqttClient = MQTTClient(broker, port)
 
 @app.route('/', methods = ['GET'])
 def index():
-    return render_template('index_modern.html')
+    return render_template('index.html')
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -41,6 +41,7 @@ def login():
 
     account_balance = usersDBClient.get_account_balance(device_id)[0]
     messages = usersDBClient.get_messages(device_id)
+    print(messages)
     usersDBClient.disconnect()
     
     totalPowerReceived = 0
@@ -62,7 +63,7 @@ def login():
             totalPowerReceived = func.calculate_energy(receiving)
 
     return render_template(
-        'dashboard_modern.html',
+        'dashboard.html',
         device_id=device_id,
         state=state,
         voltage=voltage,

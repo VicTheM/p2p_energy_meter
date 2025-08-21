@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard_modern.css')}}">
+    <!-- Lucide Icons CDN for modern icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="header-left">
+                <div class="logo-container">
+                    <i data-lucide="zap" class="logo-icon"></i>
+                </div>
+                <div>
+                    <h1 class="header-title heading-primary">Energy Dashboard</h1>
+                    <p class="header-subtitle body-text">Device {{ device_id }}</p>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <span class="badge badge-online body-medium">Online</span>
+                <button class="btn btn-outline" onclick="location.href='/logout'">
+                    <i data-lucide="log-out" class="btn-icon"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Account Balance - Prominent Display -->
+        <div class="balance-card">
+            <div class="balance-header">
+                <i data-lucide="dollar-sign" class="balance-icon"></i>
+                <h2 class="balance-title heading-secondary">Account Balance</h2>
+            </div>
+            <div class="balance-amount heading-primary">₦{{ "%.2f"|format(account_balance) }}</div>
+            <p class="balance-subtitle body-text">Available Credit</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Device Controls -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title heading-secondary">
+                        <i data-lucide="power" class="btn-icon"></i>
+                        Device Controls
+                    </h3>
+                </div>
+                <div class="card-content">
+                    <p id="offline-text" class="offline-notice hidden">
+                        <i data-lucide="alert-circle" class="offline-icon"></i>
+                        <span class="offline-text">Device is offline</span>
+                    </p>
+
+                    <div class="controls-list">
+                        <div class="control-item">
+                            <div class="control-label">
+                                <p class="control-title body-medium">Disconnect</p>
+                                <p class="control-description body-text">Stop all operations</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="disconnect">
+                                <span class="switch-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="control-item">
+                            <div class="control-label">
+                                <p class="control-title body-medium">Share Power</p>
+                                <p class="control-description body-text">Send energy to grid</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="share" {% if device_id == "002" %} disabled {% endif %}>
+                                <span class="switch-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="control-item">
+                            <div class="control-label">
+                                <p class="control-title body-medium">Receive Power</p>
+                                <p class="control-description body-text">Draw energy from grid</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="receive" {% if device_id == "001" %} disabled {% endif %}>
+                                <span class="switch-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Credit Account -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title heading-secondary">
+                        <i data-lucide="trending-up" class="btn-icon"></i>
+                        Add Credit
+                    </h3>
+                </div>
+                <div class="card-content">
+                    <form onsubmit="handleCredit(event)" class="credit-form">
+                        <div class="form-group">
+                            <label for="amount" class="form-label body-medium">Amount (NGN)</label>
+                            <input type="number" id="amount" name="amount" class="form-input body-text" 
+                                   placeholder="0.00" min="0" step="0.01" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary heading-secondary">
+                            <i data-lucide="dollar-sign" class="btn-icon"></i>
+                            Add Credit
+                        </button>
+                        <span id="credit-feedback" class="hidden" style="color: var(--primary); margin-top: 0.5rem; font-size: 0.875rem;"></span>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Meter Dashboard -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title heading-secondary">
+                        <i data-lucide="gauge" class="btn-icon"></i>
+                        Meter Readings
+                    </h3>
+                </div>
+                <div class="card-content">
+                    <div class="meter-grid">
+                        <div class="meter-item">
+                            <div class="meter-label">
+                                <i data-lucide="send" class="meter-icon meter-icon-sent"></i>
+                                <span class="meter-label-text body-text">Power Sent</span>
+                            </div>
+                            <p class="meter-value body-medium"><span id="totalPowerSent">{{ totalPowerSent }}</span>W</p>
+                        </div>
+
+                        <div class="meter-item">
+                            <div class="meter-label">
+                                <i data-lucide="download" class="meter-icon meter-icon-received"></i>
+                                <span class="meter-label-text body-text">Power Received</span>
+                            </div>
+                            <p class="meter-value body-medium"><span id="totalPowerReceived">{{ totalPowerReceived }}</span>W</p>
+                        </div>
+
+                        <div class="meter-item">
+                            <span class="meter-label-text body-text">Voltage</span>
+                            <p class="meter-value body-medium"><span id="voltage">{{ voltage }}</span>V</p>
+                        </div>
+
+                        <div class="meter-item">
+                            <span class="meter-label-text body-text">Current</span>
+                            <p class="meter-value body-medium"><span id="current">{{ current }}</span>mA</p>
+                        </div>
+
+                        <div class="meter-item">
+                            <span class="meter-label-text body-text">Power</span>
+                            <p class="meter-value body-medium"><span id="power">{{ voltage * current / 1000 }}</span>W</p>
+                        </div>
+
+                        <div class="meter-item">
+                            <span class="meter-label-text body-text">Session</span>
+                            <p class="meter-value body-medium"><span id="duration">{{ duration }}</span>s</p>
+                        </div>
+                    </div>
+
+                    <div class="meter-status">
+                        <span class="status-label body-text">Status</span>
+                        <div class="status-badge body-medium">
+                            <i data-lucide="activity" class="status-icon"></i>
+                            <span id="state">{{ state }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script defer src="{{ url_for('static', filename='script_modern.js')}}"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Format currency for Nigerian Naira
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-NG', {
+                style: 'currency',
+                currency: 'NGN',
+                minimumFractionDigits: 2
+            }).format(amount);
+        }
+        
+        // Update balance display with proper formatting
+        function updateBalanceDisplay() {
+            const balanceElement = document.querySelector('.balance-amount');
+            if (balanceElement) {
+                const currentBalance = parseFloat(balanceElement.textContent.replace(/[₦,]/g, ''));
+                balanceElement.textContent = formatCurrency(currentBalance);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateBalanceDisplay();
+        });
+    </script>
+</body>
+</html>
+
