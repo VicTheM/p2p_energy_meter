@@ -1,6 +1,10 @@
 // Modern Energy Dashboard JavaScript
 
 let stateText;
+
+let accumulatedCredit = 0.0;
+let creditPerWatt = 20.00; // Example rate: NGN 15.00 per watt-hour
+
 const currFormatter = new Intl.NumberFormat('en-NG', { 
     style: 'currency', 
     currency: 'NGN', 
@@ -55,7 +59,7 @@ function showNotification(message, type = 'info') {
     // Animate in
     setTimeout(() => {
         notification.style.transform = 'translateX(0)';
-    }, 100);
+    }, 300);
     
     // Remove after 3 seconds
     setTimeout(() => {
@@ -177,7 +181,20 @@ function handleToggle(newState, shouldPost) {
         document.getElementById('disconnect').checked = (newState === 0);
         document.getElementById('share').checked = (newState === 1);
         document.getElementById('receive').checked = (newState === 2);
-        
+
+        if (newState === 0 && accumulatedCredit > 0) {
+            const balanceElement = document.querySelector('.balance-amount');
+            if (balanceElement) {
+                let currentBalance = parseFloat(balanceElement.textContent.replace(/[^0-9.-]+/g,"")) || 0;
+                let newBalance = currentBalance + accumulatedCredit;
+                balanceElement.textContent = currFormatter.format(newBalance);
+            }
+            // Post the accumulated amount to the server
+            handleActionWithCredit(accumulatedCredit);
+            accumulatedCredit = 0.0; // Reset after sending
+            updateAccumulatedCreditDisplay();
+        }
+
         // Enable switches based on device ID
         document.querySelectorAll('.switch input').forEach(input => {
             input.disabled = false;
@@ -201,6 +218,7 @@ function handleToggle(newState, shouldPost) {
         handleAction(newState);
     }
 }
+
 
 function getStateText(state) {
     switch(state) {
@@ -314,6 +332,23 @@ async function fetchUpdates() {
         const response = await fetch('/updatepage');
         const data = await response.json();
         console.log('Fetched updates:', data);
+
+        if (data.state === 1 && data.totalPowerSent) {
+            // Calculate new credit based on the change in total power sent
+            // This requires storing the previous value.
+            const prevPowerSent = parseFloat(document.getElementById('totalPowerSent').textContent) || 0;
+            const newPowerSent = data.totalPowerSent;
+            const powerDifference = newPowerSent - prevPowerSent;
+            
+            // Assuming power is in Watts and credit is per Watt-hour, we need to convert.
+            // Power (W) * Time (s) / 3600 (s/h) * Rate (NGN/Wh)
+            const timeInterval = 5; // fetchUpdates runs every 5 seconds
+            const creditToAdd = (powerDifference * timeInterval / 3600) * creditPerWatt;
+            
+            accumulatedCredit += creditToAdd;
+            updateAccumulatedCreditDisplay();
+        }
+        
         updatePage(data);
     } catch (error) {
         console.error('Error fetching updates:', error);
@@ -336,7 +371,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
     // Set up periodic updates
-    setInterval(fetchUpdates, 5000);
+    setInterval(fetchUpdates, 1000);
     
     // Add event listeners for switches
     document.querySelectorAll('.switch input[type="checkbox"]').forEach(switchInput => {
@@ -382,4 +417,37 @@ window.EnergyDashboard = {
     updatePage,
     showNotification
 };
+
+
+// Function to update the accumulated credit display.
+function updateAccumulatedCreditDisplay() {
+    const accCreditElement = document.getElementById('accumulatedCredit');
+    if (accCreditElement) {
+        accCreditElement.textContent = currFormatter.format(accumulatedCredit);
+    }
+}
+
+// A new function to post accumulated credit.
+async function handleActionWithCredit(amount) {
+    try {
+        // Round to 2 decimal places
+        const roundedAmount = parseFloat(amount.toFixed(2));
+
+        const response = await fetch(`/actions?credit=${roundedAmount}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+        updatePage(data);
+        showNotification(
+            `Successfully added ${currFormatter.format(roundedAmount)} accumulated credit to your balance.`,
+            'success'
+        );
+    } catch (error) {
+        console.error('Error:', error);
+        // showNotification('Failed to add accumulated credit', 'error');
+    }
+}
 

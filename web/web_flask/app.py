@@ -69,8 +69,8 @@ def login():
         current=current,
         duration=duration,
         account_balance=account_balance,
-        totalPowerSent=totalPowerSent,
-        totalPowerReceived=totalPowerReceived
+        totalPowerSent=round(totalPowerSent/1000, 2),
+        totalPowerReceived=round(totalPowerReceived/1000, 2)
         )
 
     # return jsonify({"device_id": device_id, "state": state, "voltage": voltage, "current": current, "duration": duration, "account_balance": account_balance})  
@@ -107,12 +107,12 @@ def get_messages():
 
     payload = {
         "state": state,
-        "voltage": voltage,
+        "voltage": 226,
         "current": current,
         "duration": duration,
         "account_balance": account_balance,
-        "totalPowerSent": totalPowerSent,
-        "totalPowerReceived": totalPowerReceived,
+        "totalPowerSent": round(totalPowerSent/1000, 2),
+        "totalPowerReceived": round(totalPowerReceived/1000, 2),
         "newstate": state
     }
     return jsonify(payload)
