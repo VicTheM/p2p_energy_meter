@@ -9,13 +9,14 @@ from mqttClass import MQTTClient
 import os
 import subprocess
 import utilFunctions as func
+import sys
 
 broker = "broker.hivemq.com"
 port = 1883
 subtopic = "data/1/{}" # deviceID is the last part of the topic
 pubtopic = "commands/1/{}"
 
-subprocess.Popen(['python', './mqttWatcher.py'])
+subprocess.Popen([sys.executable, './mqttWatcher.py'])
 app = Flask(__name__)
 # app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.secret_key = os.urandom(24)
