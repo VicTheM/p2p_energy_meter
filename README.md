@@ -63,10 +63,35 @@ The smart metering system is designed to monitor and share domestically generate
 4. **Set up the web server**
    ```sh
    cd ../web
-   pip install -r requirements.txt
+   python -m pip install -r requirements.txt
    cd web_flask
    python app.py
    ```
+
+   On Windows PowerShell, the equivalent commands are:
+   ```powershell
+   Set-Location web
+   python -m pip install -r requirements.txt
+   Set-Location web_flask
+   python app.py
+   ```
+
+   Starting `app.py` seeds the demo database if its records are missing and starts
+   the MQTT watcher. Open http://localhost:5000 and use device ID `001` or `002`.
+
+### Deploy on Render
+
+1. Push this repository to GitHub or GitLab.
+2. In Render, choose **New > Blueprint** and select the repository.
+3. Render will read `render.yaml`, install `web/requirements.txt`, and start the
+   app with Gunicorn.
+4. Open the generated `.onrender.com` URL.
+
+The Render service starts the database seed and MQTT watcher automatically.
+The included SQLite database is suitable for a demo only: Render's local
+filesystem can be reset during redeploys or service restarts. Use a persistent
+database such as Render PostgreSQL before storing production balances or meter
+history.
 
 ### Data Analysis and Visualization (coming soon)
 

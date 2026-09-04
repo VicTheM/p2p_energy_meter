@@ -12,26 +12,27 @@ userBaccount = ["002", 70000]
 userAmessage = ["001", 0, 0.0, 0.0, 0]
 userBmessage = ["002", 0, 0.0, 0.0, 0]
 
-# set up
-dbclient = DBClient()
-dbclient.delete_user(userA[1])
-dbclient.delete_user(userB[1])
+def seed_database(reset=False):
+	"""Create the demo records without resetting live data by default."""
+	dbclient = DBClient()
 
-# populate DB
-dbclient.add_user(*userA)
-dbclient.add_user(*userB)
-dbclient.add_account(*userAaccount)
-dbclient.add_account(*userBaccount)
+	if reset:
+		dbclient.delete_user(userA[1])
+		dbclient.delete_user(userB[1])
 
-# not to be added
-dbclient.add_message(*userAmessage)
-dbclient.add_message(*userBmessage)
+	for user in (userA, userB):
+		dbclient.add_user(*user)
 
-# Visualize change
-print(dbclient.get_user())
-print(dbclient.get_account_balance(userAaccount[0])[0])
-print(dbclient.get_account_balance(userBaccount[0])[0])
-print(dbclient.get_messages("001"))
-print(dbclient.get_messages("002"))
+	for account in (userAaccount, userBaccount):
+		if dbclient.get_account_balance(account[0]) is None:
+			dbclient.add_account(*account)
 
-dbclient.disconnect()
+	for message in (userAmessage, userBmessage):
+		if not dbclient.get_messages(message[0]):
+			dbclient.add_message(*message)
+
+	dbclient.disconnect()
+
+
+if __name__ == "__main__":
+	seed_database(reset=True)

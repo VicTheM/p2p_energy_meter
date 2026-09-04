@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: p2p-energy-meter
+    runtime: python
+    buildCommand: pip install -r web/requirements.txt
+    startCommand: gunicorn --chdir web/web_flask --workers 1 --bind 0.0.0.0:$PORT app:app
+    envVars:
+      - key: START_BACKGROUND_SERVICES
+        value: "1"
+      - key: PYTHON_VERSION
+        value: "3.12.0"

@@ -10,13 +10,14 @@ import os
 import subprocess
 import utilFunctions as func
 import sys
+import atexit
+from pathlib import Path
 
 broker = "broker.hivemq.com"
 port = 1883
 subtopic = "data/1/{}" # deviceID is the last part of the topic
 pubtopic = "commands/1/{}"
 
-subprocess.Popen([sys.executable, './mqttWatcher.py'])
 app = Flask(__name__)
 # app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.secret_key = os.urandom(24)
@@ -24,6 +25,42 @@ app.secret_key = os.urandom(24)
 
 usersDBClient = DBClient(connect=False)
 mqttClient = MQTTClient(broker, port)
+watcher_process = None
+
+
+def start_background_services():
+    """Seed the database and start the MQTT watcher for this app process."""
+    global watcher_process
+    if watcher_process is not None and watcher_process.poll() is None:
+        return watcher_process
+
+    app_dir = Path(__file__).resolve().parent
+    web_dir = app_dir.parent
+    seed_script = web_dir / 'populateDB.py'
+    watcher_script = app_dir / 'mqttWatcher.py'
+
+    subprocess.run(
+        [sys.executable, str(seed_script)],
+        cwd=str(app_dir),
+        check=True,
+    )
+    watcher_process = subprocess.Popen(
+        [sys.executable, str(watcher_script)],
+        cwd=str(app_dir),
+    )
+    return watcher_process
+
+
+def stop_background_services():
+    if watcher_process is not None and watcher_process.poll() is None:
+        watcher_process.terminate()
+        watcher_process.wait()
+
+
+atexit.register(stop_background_services)
+
+if os.environ.get('START_BACKGROUND_SERVICES') == '1':
+    start_background_services()
 
 
 
@@ -159,4 +196,5 @@ def logout():
 
 
 if __name__ == '__main__':
+    start_background_services()
     app.run(host='0.0.0.0', port='5000')
