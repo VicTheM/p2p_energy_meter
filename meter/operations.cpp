@@ -3,7 +3,7 @@
 #include "header.h"
 
 /*------------------------------------ Global Definitions ----------------------------------------*/
-const char* WIFI_SSID = "Riddles"; // "unilag.wifi.int23"
+const char* WIFI_SSID = "es"; // "unilag.wifi.int23"
 const char* WIFI_PASSWORD = "guess it"; //"2524767676"
 const char* MQTT_BROKER = "broker.hivemq.com";
 const char* MQTT_SUB_TOPIC = "commands/1/001"; // of the form "commands/<node>/<deviceID>"
